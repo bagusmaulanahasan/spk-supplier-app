@@ -1,0 +1,5 @@
+[
+    { "alternatifId": "A1", "nilai": { "C1": 10000, "C2": 8, "C3": 2 } },
+    { "alternatifId": "A2", "nilai": { "C1": 9000, "C2": 6, "C3": 3 } },
+    { "alternatifId": "A3", "nilai": { "C1": 9500, "C2": 7, "C3": 1 } }
+]
