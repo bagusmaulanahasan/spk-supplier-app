@@ -17,7 +17,7 @@ const listSideNav = [
     { 
         title: "Data Users", 
         icon: <Users size={18} />, 
-        path: "/users" 
+        path: "/pengguna" 
     }, 
     {
         title: "Data Alternatif",
@@ -32,17 +32,21 @@ const listSideNav = [
     {
         title: "Penilaian Alternatif",
         icon: <FileBarChart2 size={18} />,
-        path: "/penilaian",
+        path: "/penilaian-alternatif",
     },
     {
-        title: "Proses Perhitungan",
+        title: "Penilaian Kriteria",
         icon: <Calculator size={18} />,
-        path: "/perhitungan",
+        path: "/penilaian-kriteria",
     },
+    //     title: "Proses Perhitungan",
+    //     icon: <Calculator size={18} />,
+    //     path: "/proses-perhitungan",
+    // },
     {
         title: "Data Hasil Keputusan",
         icon: <CheckCircle size={18} />,
-        path: "/hasil",
+        path: "/hasil-perhitungan",
     },
 ];
 

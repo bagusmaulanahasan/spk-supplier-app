@@ -1,21 +1,30 @@
-import "./App.css";
-import AuthLayout from "./components/Layouts/AuthLayout.jsx";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import CriteriaPage from "./pages/criteriaPage";
+import SuppliersPage from "./pages/suppliersPage";
+import UsersPage from "./pages/usersPage";
+import CriteriaValuesPage from "./pages/criteriaValuesPage";
+import ResultsPage from "./pages/resultsPage";
+import SupplierCriteriaValuesPage from "./pages/supplierCriteriaValuesPage";
+import WeightsPage from "./pages/weightsPage";
+import Dashboard from "./pages/dashboard";
+import RegisterPage from "./pages/register";
+import LoginPage from "./pages/login";
 
-function app() {
+export default function App() {
     return (
-        <>
-            <div className="flex flex-col items-center h-screen">
-                <h1 className="text-3xl font-bold underline underline-offset-8">
-                    HELLO WORLD
-                </h1>
-                <form action="">
-                    <label htmlFor="">Nih input dibawah</label>
-                    <AuthLayout></AuthLayout>
-
-                </form>
-            </div>
-        </>
+        <Router>
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage/>} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/kriteria" element={<CriteriaPage />} />
+                <Route path="/alternatif" element={<SuppliersPage />} />
+                <Route path="/pengguna" element={<UsersPage />} />
+                <Route path="/penilaian-kriteria" element={<CriteriaValuesPage />} />
+                <Route path="/hasil-perhitungan" element={<ResultsPage />} />
+                <Route path="/penilaian-alternatif" element={<SupplierCriteriaValuesPage />}/>
+                <Route path="/weights" element={<WeightsPage />} />
+            </Routes>
+        </Router>
     );
 }
-
-export default app;

@@ -33,7 +33,7 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
     const { initial, name } = req.body;
     db.query(
-        "UPDATE results SET initial = ?, name = ? WHERE id = ?",
+        "UPDATE suppliers SET initial = ?, name = ? WHERE id = ?",
         [initial, name, req.params.id],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -43,7 +43,7 @@ exports.update = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-    db.query("DELETE FROM results WHERE id = ?", [req.params.id], (err) => {
+    db.query("DELETE FROM suppliers WHERE id = ?", [req.params.id], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: "Result deleted successfully" });
     });

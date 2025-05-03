@@ -1,5 +1,0 @@
-[
-    { "id": "C1", "nama": "Harga", "bobot": 0.4, "tipe": "cost" },
-    { "id": "C2", "nama": "Kualitas", "bobot": 0.3, "tipe": "benefit" },
-    { "id": "C3", "nama": "Waktu Pengiriman", "bobot": 0.3, "tipe": "benefit" }
-]

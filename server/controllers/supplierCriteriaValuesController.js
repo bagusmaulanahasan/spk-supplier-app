@@ -9,7 +9,7 @@ exports.getAll = (req, res) => {
 
 exports.getById = (req, res) => {
     db.query(
-        "SELECT * FROM supplier WHERE id = ?",
+        "SELECT * FROM supplier_criteria_values WHERE id = ?",
         [req.params.id],
         (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -21,7 +21,7 @@ exports.getById = (req, res) => {
 exports.create = (req, res) => {
     const { supplier_id, criteria_id, value } = req.body;
     db.query(
-        "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES (?, ?)",
+        "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES (?, ?, ?)",
         [supplier_id, criteria_id, value],
         (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -33,7 +33,7 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
     const { supplier_id, criteria_id, value } = req.body;
     db.query(
-        "UPDATE results SET supplier_id = ?, criteria_id, value = ? WHERE id = ?",
+        "UPDATE supplier_criteria_values SET supplier_id = ?, criteria_id = ?, value = ? WHERE id = ?",
         [supplier_id, criteria_id, value, req.params.id],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -43,7 +43,7 @@ exports.update = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-    db.query("DELETE FROM results WHERE id = ?", [req.params.id], (err) => {
+    db.query("DELETE FROM supplier_criteria_values WHERE id = ?", [req.params.id], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: "Result deleted successfully" });
     });
