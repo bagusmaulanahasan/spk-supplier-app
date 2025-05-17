@@ -8,17 +8,19 @@ import {
     CheckCircle,
 } from "lucide-react";
 
+const menuManagerOnly = {
+    title: "Data Users", 
+    icon: <Users size={18} />, 
+    path: "/pengguna" 
+}
+
 const listSideNav = [
     {
         title: "Dashboard",
         icon: <Home size={18} />,
         path: "/dashboard",
     },
-    { 
-        title: "Data Users", 
-        icon: <Users size={18} />, 
-        path: "/pengguna" 
-    }, 
+    ...(localStorage.getItem("role") === "manager" ? [menuManagerOnly] : []),
     {
         title: "Data Alternatif",
         icon: <ListOrdered size={18} />,

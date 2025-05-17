@@ -3,20 +3,23 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "../components/ui/card"; // pakai shadcn/ui
 import { BarChart3, Users2, FileText, Trophy } from "lucide-react";
 import ContainerPage from "@/components/Layouts/ContainerPages";
+import { Link } from "react-router-dom";
 
 import {
     getCriteria,
     getSuppliers,
     getSupplierCriteriaValues,
 } from "../api/api";
+import BarChart from "@/components/BarChart";
+import SupplierList from "@/components/Suppliers/SupplierList";
 
 const Dashboard = () => {
-    const [data, setData] = useState({
-        totalAlternatif: 2,
-        totalKriteria: 3,
-        totalPenilaian: 6,
-        hasilTerbaik: "Supplier A",
-    });
+    // const [data, setData] = useState({
+    //     totalAlternatif: 2,
+    //     totalKriteria: 3,
+    //     totalPenilaian: 6,
+    //     hasilTerbaik: "Supplier A",
+    // });
 
     const [criteria, setCriteria] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
@@ -90,77 +93,89 @@ const Dashboard = () => {
 
     return (
         <ContainerPage>
-            <h1 className="text-2xl font-bold mb-4 text-slate-800">
-                Dashboard
-            </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-blue-100 shadow-md">
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-600">
-                                Total Alternatif
-                            </h2>
-                            <p className="text-2xl font-bold">
-                                {
-                                    suppliers.map((supplier) => supplier.name)
-                                        .length
-                                }
-                            </p>
-                        </div>
-                        <Users2 className="text-blue-500 w-8 h-8" />
-                    </CardContent>
-                </Card>
+            <div className="p-8">
+                <h1 className="text-2xl font-bold mb-4 text-slate-800">
+                    Dashboard
+                </h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Link to="/alternatif">
+                        <Card className="bg-blue-100 shadow-md h-full">
+                            <CardContent className="p-4 flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-600">
+                                        Total Alternatif
+                                    </h2>
+                                    <p className="text-2xl font-bold">
+                                        {
+                                            suppliers.map(
+                                                (supplier) => supplier.name
+                                            ).length
+                                        }
+                                    </p>
+                                </div>
+                                <Users2 className="text-blue-500 w-8 h-8" />
+                            </CardContent>
+                        </Card>
+                    </Link>
 
-                <Card className="bg-green-100 shadow-md">
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-600">
-                                Total Kriteria
-                            </h2>
-                            <p className="text-2xl font-bold">
-                                {criteria.map((c) => c.name).length}
-                            </p>
-                        </div>
-                        <FileText className="text-green-500 w-8 h-8" />
-                    </CardContent>
-                </Card>
+                    <Link to="/kriteria">
+                        <Card className="bg-green-100 shadow-md h-full">
+                            <CardContent className="p-4 flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-600">
+                                        Total Kriteria
+                                    </h2>
+                                    <p className="text-2xl font-bold">
+                                        {criteria.map((c) => c.name).length}
+                                    </p>
+                                </div>
+                                <FileText className="text-green-500 w-8 h-8" />
+                            </CardContent>
+                        </Card>
+                    </Link>
 
-                <Card className="bg-yellow-100 shadow-md">
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-600">
-                                Total Penilaian
-                            </h2>
-                            <p className="text-2xl font-bold">
-                                {supplierCriteriaValues.length}
-                            </p>
-                        </div>
-                        <BarChart3 className="text-yellow-500 w-8 h-8" />
-                    </CardContent>
-                </Card>
+                    <Link to="/penilaian-alternatif">
+                        <Card className="bg-yellow-100 shadow-md h-full">
+                            <CardContent className="p-4 flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-600">
+                                        Total Penilaian
+                                    </h2>
+                                    <p className="text-2xl font-bold">
+                                        {supplierCriteriaValues.length}
+                                    </p>
+                                </div>
+                                <BarChart3 className="text-yellow-500 w-8 h-8" />
+                            </CardContent>
+                        </Card>
+                    </Link>
 
-                <Card className="bg-purple-100 shadow-md">
-                    <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-sm text-gray-600">
-                                Hasil Terbaik
-                            </h2>
-                            <p className="text-xl font-bold">
-                                {results.length > 0
-                                    ? results[0].supplier.name
-                                    : ""}
-                            </p>{" "}
-                            <p className="text-slate-600">
-                                (
-                                {results.length > 0
-                                    ? results[0].supplier.initial
-                                    : ""}
-                                )
-                            </p>
-                        </div>
-                        <Trophy className="text-purple-500 w-8 h-8" />
-                    </CardContent>
-                </Card>
+                    <Link to="/hasil-perhitungan">
+                        <Card className="bg-purple-100 shadow-md h-full">
+                            <CardContent className="p-4 flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm text-gray-600">
+                                        Hasil Terbaik
+                                    </h2>
+                                    <p className="text-xl font-bold">
+                                        {results.length > 0
+                                            ? results[0].supplier.name
+                                            : ""}
+                                    </p>{" "}
+                                    <p className="text-slate-600">
+                                        (
+                                        {results.length > 0
+                                            ? results[0].supplier.initial
+                                            : ""}
+                                        )
+                                    </p>
+                                </div>
+                                <Trophy className="text-purple-500 w-8 h-8" />
+                            </CardContent>
+                        </Card>
+                    </Link>
+                </div>
+                <BarChart></BarChart>
             </div>
         </ContainerPage>
     );

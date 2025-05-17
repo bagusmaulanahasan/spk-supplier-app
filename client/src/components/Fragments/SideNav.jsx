@@ -1,10 +1,13 @@
 import listSideNav from "./ListSideNav";
 import { Link, useLocation } from "react-router-dom";
-import useSidebarStore from '../../store/sideBarStore';
+import useSidebarStore from "../../store/sideBarStore";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 const SideNav = (props) => {
     const { isOpen, toggleSidebar } = useSidebarStore();
     const location = useLocation();
+    const navigate = useNavigate();
 
     return (
         <div className="flex">
@@ -15,7 +18,7 @@ const SideNav = (props) => {
             >
                 <div className="flex justify-between items-center">
                     <h1
-                        className={`text-xl font-bold duration-300 ${
+                        className={`text-xl font-bold duration-300 ml-2 ${
                             !isOpen && "scale-0"
                         }`}
                     >
@@ -58,6 +61,32 @@ const SideNav = (props) => {
                         </li>
                     ))}
                 </ul>
+                <button
+                    onClick={() => {
+                        localStorage.clear();
+                        navigate("/login");
+                    }}
+                    className={`flex items-center gap-2 py-2 rounded-md bg-red-500/50 text-white hover:bg-red-600/70 transition duration-200 border border-red-600/50 shadow-sm cursor-pointer mt-12 ${
+                        isOpen
+                            ? "px-4 w-full py-4"
+                            : "px-2"}`}
+                >
+                    <LogOut size={18} />
+                    <span
+                        className={`
+                            ${
+                                !isOpen
+                                    ? "opacity-0 translate-x-[-10px] scale-y-0"
+                                    : "opacity-100 translate-x-0 scale-y-100"
+                            }
+                            origin-left duration-200 transform transition-all
+                            absolute left-[64px]
+                            whitespace-nowrap
+                        `}
+                    >
+                        logout
+                    </span>
+                </button>
             </div>
         </div>
     );

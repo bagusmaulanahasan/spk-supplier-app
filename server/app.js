@@ -5,7 +5,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const cors = require('cors');
-app.use(cors());  // Mengizinkan CORS dari semua asal
+app.use(cors({
+    origin: "http://localhost:5173", // ganti dengan URL React kamu
+    credentials: true,
+}));  // Mengizinkan CORS dari semua asal
 
 app.use(express.json());
 
@@ -17,8 +20,11 @@ const supplierCriteriaValuesRoutes = require("./routes/supplierCriteriaValuesRou
 const suppliersRoutes = require("./routes/suppliersRoutes");
 const usersRoutes = require("./routes/usersRoutes");
 const weightsRoutes = require("./routes/weightsRoutes");
+const login = require("./routes/loginRoutes");
+const register = require("./routes/registerRoutes");
 
-// Register routes
+app.use("/api/register", register);
+app.use("/api/login", login);
 app.use("/api/criteria", criteriaRoutes);
 app.use("/api/criteria-values", criteriaValuesRoutes);
 app.use("/api/results", resultsRoutes);

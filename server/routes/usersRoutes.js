@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/usersController");
+const { verifyToken, isAdminOrManager } = require("../middleware/auth");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getById);
-router.post("/", controller.create);
-router.put("/:id", controller.update);
-router.delete("/:id", controller.delete);
+// hanya manager bisa akses
+router.get("/", verifyToken, isAdminOrManager, controller.getAll);
+router.get("/:id", verifyToken, isAdminOrManager, controller.getById);
+router.post("/", verifyToken, isAdminOrManager, controller.create);
+router.put("/:id", verifyToken, isAdminOrManager, controller.update);
+router.delete("/:id", verifyToken, isAdminOrManager, controller.delete);
 
 module.exports = router;
