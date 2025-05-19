@@ -7,6 +7,10 @@ const API = axios.create({
     baseURL: "http://localhost:3000/api",
 });
 
+// const API = axios.create({
+//     baseURL: "http://192.168.1.59:3000/api",
+// });
+
 // Fungsi untuk ambil token dari localStorage dan pasang di header Authorization
 API.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
@@ -15,6 +19,9 @@ API.interceptors.request.use((config) => {
     }
     return config;
 });
+
+export const login = (data) => API.post("/login", data);
+export const register = (data) => API.post("/register", data);
 
 export const getCriteria = () => API.get("/criteria");
 export const getCriteriaById = (id) => API.get(`/criteria/${id}`);
@@ -39,6 +46,7 @@ export const updateCriteriaValue = (id, data) =>
 export const deleteCriteriaValue = (id) => API.delete(`/criteria-values/${id}`);
 
 export const getResults = () => API.get("/results");
+export const getResultByDate = () => API.get("/results/dates")
 export const createResult = (data) => API.post("/results", data);
 export const updateResult = (id, data) => API.put(`/results/${id}`, data);
 export const deleteResult = (id) => API.delete(`/results/${id}`);

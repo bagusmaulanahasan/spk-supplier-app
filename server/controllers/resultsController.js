@@ -49,20 +49,23 @@ exports.create = (req, res) => {
     }
 
     const values = results.map((r) => [r.supplier_id, r.score, r.ranking]);
+    console.log("Values to insert:", values);
 
     const sql = "INSERT INTO results (supplier_id, score, ranking) VALUES ?";
     db.query(sql, [values], (err, result) => {
         if (err) {
-            console.error("MySQL Error:", err); // Tambahkan ini
+            console.error("MySQL Error:", err);
             return res.status(500).json({ error: err.message });
         }
 
+        console.log("Insert Result:", result);
         res.json({
             message: "Results inserted successfully",
             insertedCount: result.affectedRows,
         });
     });
 };
+
 
 // // exports.update = (req, res) => {
 // //     const { supplier_id, total } = req.body;

@@ -11,7 +11,7 @@ import {
     getSupplierCriteriaValues,
 } from "../api/api";
 import BarChart from "@/components/BarChart";
-import SupplierList from "@/components/Suppliers/SupplierList";
+// import SupplierList from "@/components/Suppliers/SupplierList";
 
 const Dashboard = () => {
     // const [data, setData] = useState({

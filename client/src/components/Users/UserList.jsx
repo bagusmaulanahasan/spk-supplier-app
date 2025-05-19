@@ -4,6 +4,7 @@ import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import UserForm from "./UserForm";
+import Swal from "sweetalert2";
 
 export default function UserList() {
     const [users, setUsers] = useState([]);
@@ -39,12 +40,27 @@ export default function UserList() {
             console.error("Submit error:", err);
         }
     };
-
+    
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this user?")) {
-            await API.deleteUser(id);
-            fetchData();
-        }
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Data akan dihapus secara permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await API.deleteUser(id);
+                fetchData();
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "data berhasil dihapus.",
+                    icon: "success",
+                });
+            }
+        });
     };
 
     const handleSearch = (e) => {
@@ -105,8 +121,8 @@ export default function UserList() {
     };
 
     return (
-        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-6xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700">User Management</h2>
+        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
+            <h2 className="text-2xl font-semibold text-gray-700">Data Pengguna</h2>
             <hr />
 
             <button
@@ -116,7 +132,7 @@ export default function UserList() {
                     setShowForm(true);
                 }}
             >
-                Tambah User
+                Tambah Pengguna
             </button>
 
             <UserForm

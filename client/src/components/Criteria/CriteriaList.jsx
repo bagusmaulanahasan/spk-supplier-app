@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
@@ -41,10 +42,25 @@ export default function CriteriaList() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this item?")) {
-            await API.deleteCriteria(id);
-            fetchData();
-        }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await API.deleteCriteria(id);
+                fetchData();
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success",
+                });
+            }
+        });
     };
 
     const handleSearch = (e) => {
@@ -101,13 +117,24 @@ export default function CriteriaList() {
     ];
 
     const customStyles = {
-        rows: { style: { minHeight: "48px" }, stripedStyle: { backgroundColor: "#f9fafb" } },
-        headCells: { style: { backgroundColor: "#1f2937", color: "white", fontWeight: "bold" } },
+        rows: {
+            style: { minHeight: "48px" },
+            stripedStyle: { backgroundColor: "#f9fafb" },
+        },
+        headCells: {
+            style: {
+                backgroundColor: "#1f2937",
+                color: "white",
+                fontWeight: "bold",
+            },
+        },
     };
 
     return (
-        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-6xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700">Criteria Management</h2>
+        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
+            <h2 className="text-2xl font-semibold text-gray-700">
+                Data Kriteria
+            </h2>
             <hr />
 
             <button

@@ -45,7 +45,7 @@ export default function CriteriaValuesForm({
                 onSubmit={handleSubmit}
             >
                 <h2 className="text-lg font-bold mb-4">
-                    {mode === "edit" ? "Edit Nilai Kriteria" : "Tambah Nilai Kriteria"}
+                    {mode === "edit" ? "Edit Penilaian Kriteria" : "Tambah Penilaian Kriteria"}
                 </h2>
                 <div className="mb-4">
                     <label className="block text-slate-700 text-sm font-bold mb-2">

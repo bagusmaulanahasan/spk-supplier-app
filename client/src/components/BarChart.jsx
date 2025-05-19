@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
-import axios from "axios";
+// import axios from "axios";
+import { getResults, getSuppliers } from "@/api/api";
 
 const BarChartResponsive = () => {
     const chartRef = useRef(null);
@@ -9,8 +10,8 @@ const BarChartResponsive = () => {
         const fetchDataAndRenderChart = async () => {
             try {
                 const [resultsRes, suppliersRes] = await Promise.all([
-                    axios.get("http://localhost:3000/api/results"),
-                    axios.get("http://localhost:3000/api/suppliers"),
+                    getResults(),
+                    getSuppliers(),
                 ]);
 
                 const results = resultsRes.data;

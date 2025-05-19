@@ -18,17 +18,69 @@ exports.getById = (req, res) => {
     );
 };
 
+// exports.create = (req, res) => {
+//     const { supplier_id, criteria_id, value } = req.body;
+//     db.query(
+//         "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES (?, ?, ?)",
+//         [supplier_id, criteria_id, value],
+//         (err, result) => {
+//             if (err) return res.status(500).json({ error: err.message });
+//             res.json({ id: result.insertId, supplier_id, criteria_id, value });
+//         }
+//     );
+// };
+
+// exports.create = (req, res) => {
+//     const { supplier_id, values } = req.body;
+
+//     if (!supplier_id || typeof values !== "object") {
+//         return res.status(400).json({ error: "Invalid input" });
+//     }
+
+//     const entries = Object.entries(values); // [ [criteria_id, value], ... ]
+//     if (entries.length === 0) {
+//         return res.status(400).json({ error: "No values provided" });
+//     }
+
+//     const sql = "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES ?";
+//     const valuesArray = entries.map(([criteria_id, value]) => [supplier_id, parseInt(criteria_id), value]);
+
+//     db.query(sql, [valuesArray], (err, result) => {
+//         if (err) return res.status(500).json({ error: err.message });
+//         res.json({
+//             message: "Values inserted",
+//             insertedCount: result.affectedRows,
+//         });
+//     });
+// };
+
 exports.create = (req, res) => {
-    const { supplier_id, criteria_id, value } = req.body;
-    db.query(
-        "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES (?, ?, ?)",
-        [supplier_id, criteria_id, value],
-        (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ id: result.insertId, supplier_id, criteria_id, value });
-        }
-    );
+    const { supplier_id, values } = req.body;
+
+    if (!supplier_id || !Array.isArray(values)) {
+        return res.status(400).json({ error: "Invalid input" });
+    }
+
+    if (values.length === 0) {
+        return res.status(400).json({ error: "No values provided" });
+    }
+
+    const sql = "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES ?";
+    const valuesArray = values.map(({ criteria_id, value }) => [
+        supplier_id,
+        parseInt(criteria_id),
+        value,
+    ]);
+
+    db.query(sql, [valuesArray], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({
+            message: "Values inserted",
+            insertedCount: result.affectedRows,
+        });
+    });
 };
+
 
 exports.update = (req, res) => {
     const { supplier_id, criteria_id, value } = req.body;

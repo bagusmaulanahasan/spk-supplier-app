@@ -59,9 +59,9 @@ const FormRegister = () => {
         }
 
         try {
-            const res = await axios.post("http://localhost:3000/api/register", {
+            const res = await register({
                 username: username,
-                password,
+                password: password,
                 role: "admin", // default role
             });
 
@@ -78,7 +78,7 @@ const FormRegister = () => {
             <InputForm
                 htmlFor="Username"
                 type="username"
-                placeholder="your username here..." 
+                placeholder="your username here..."
                 name="username"
             />
             <InputForm

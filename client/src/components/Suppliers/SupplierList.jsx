@@ -1,4 +1,4 @@
-
+import Swal from "sweetalert2";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
@@ -42,10 +42,25 @@ export default function SupplierList() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this supplier?")) {
-            await API.deleteSupplier(id);
-            fetchData();
-        }
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Data akan dihapus secara permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await API.deleteSupplier(id);
+                fetchData();
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "data berhasil dihapus.",
+                    icon: "success",
+                });
+            }
+        });
     };
 
     const handleSearch = (e) => {
@@ -63,8 +78,13 @@ export default function SupplierList() {
         const worksheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Suppliers");
-        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+        const blob = new Blob([excelBuffer], {
+            type: "application/octet-stream",
+        });
         saveAs(blob, "suppliers.xlsx");
     };
 
@@ -96,13 +116,24 @@ export default function SupplierList() {
     ];
 
     const customStyles = {
-        rows: { style: { minHeight: "48px" }, stripedStyle: { backgroundColor: "#f9fafb" } },
-        headCells: { style: { backgroundColor: "#1f2937", color: "white", fontWeight: "bold" } },
+        rows: {
+            style: { minHeight: "48px" },
+            stripedStyle: { backgroundColor: "#f9fafb" },
+        },
+        headCells: {
+            style: {
+                backgroundColor: "#1f2937",
+                color: "white",
+                fontWeight: "bold",
+            },
+        },
     };
 
     return (
-        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-6xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700">Supplier Management</h2>
+        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
+            <h2 className="text-2xl font-semibold text-gray-700">
+                Data Alternatif (Supplier)
+            </h2>
             <hr />
 
             <button

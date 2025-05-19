@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import InputForm from "../Elements/Input";
+import Swal from 'sweetalert2'
 
 export default function CriteriaForm({
     mode = "add",

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const menuManagerOnly = {
-    title: "Data Users", 
+    title: "Data Pengguna", 
     icon: <Users size={18} />, 
     path: "/pengguna" 
 }

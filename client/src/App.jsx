@@ -5,7 +5,7 @@ import UsersPage from "./pages/usersPage";
 import CriteriaValuesPage from "./pages/criteriaValuesPage";
 import ResultsPage from "./pages/resultsPage";
 import SupplierCriteriaValuesPage from "./pages/supplierCriteriaValuesPage";
-import WeightsPage from "./pages/weightsPage";
+// import WeightsPage from "./pages/weightsPage";
 import Dashboard from "./pages/dashboard";
 import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
@@ -23,7 +23,6 @@ export default function App() {
                 <Route path="/penilaian-kriteria" element={<CriteriaValuesPage />} />
                 <Route path="/hasil-perhitungan" element={<ResultsPage />} />
                 <Route path="/penilaian-alternatif" element={<SupplierCriteriaValuesPage />}/>
-                <Route path="/weights" element={<WeightsPage />} />
             </Routes>
         </Router>
     );

@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
@@ -52,24 +53,47 @@ export default function CriteriaValuesList() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this item?")) {
-            await API.deleteCriteriaValue(id);
-            fetchData();
-        }
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Data akan dihapus secara permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await API.deleteCriteriaValue(id);
+                fetchData();
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "data berhasil dihapus.",
+                    icon: "success",
+                });
+            }
+        });
     };
 
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-        const filtered = criteriaValues.filter(
-            (item) =>
-                item.value.toLowerCase().includes(term) ||
-                item.description.toLowerCase().includes(term) ||
-                criteriaList
-                    .find((criteria) => criteria.id === item.criteria_id)
-                    ?.name.toLowerCase()
-                    .includes(term)
-        );
+
+        const filtered = criteriaValues.filter((item) => {
+            const valueFiltered = String(item.value || "").toLowerCase();
+            const descriptionFiltered = (item.description || "").toLowerCase();
+            const criteriaNameFiltered = (
+                criteriaList.find(
+                    (criteria) => criteria.id === item.criteria_id
+                )?.name || ""
+            ).toLowerCase();
+
+            return (
+                valueFiltered.includes(term) ||
+                descriptionFiltered.includes(term) ||
+                criteriaNameFiltered.includes(term)
+            );
+        });
+
         setFilteredData(filtered);
     };
 
@@ -87,8 +111,6 @@ export default function CriteriaValuesList() {
         saveAs(blob, "criteria-values.xlsx");
     };
 
-    
-    
     const columns = [
         {
             name: "Nama Kriteria",
@@ -160,9 +182,9 @@ export default function CriteriaValuesList() {
     };
 
     return (
-        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-6xl mx-auto">
+        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
             <h2 className="text-2xl font-semibold text-gray-700">
-                Manajemen Nilai Kriteria
+                Penilaian Kriteria
             </h2>
             <hr />
 
@@ -173,7 +195,7 @@ export default function CriteriaValuesList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Nilai Kriteria
+                Tambah Penilaian Kriteria
             </button>
 
             <CriteriaValuesForm

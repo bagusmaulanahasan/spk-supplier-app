@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
     getCriteria,
     getSuppliers,
     getSupplierCriteriaValues,
+    createResult,
+    getResultByDate,
 } from "../../api/api";
 import { Card, CardContent } from "@/components/ui/card";
+import Swal from "sweetalert2";
 
 const SAWCalculation = () => {
     const [criteria, setCriteria] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [supplierCriteriaValues, setSupplierCriteriaValues] = useState([]);
     const [results, setResults] = useState([]);
+    const [lastUpdate, setLastUpdate] = useState();
 
     useEffect(() => {
         const fetchData = async () => {
-            const [criteriaRes, suppliersRes, scvRes] = await Promise.all([
-                getCriteria(),
-                getSuppliers(),
-                getSupplierCriteriaValues(),
-            ]);
+            const [criteriaRes, lastUpdateRes, suppliersRes, scvRes] =
+                await Promise.all([
+                    getCriteria(),
+                    getResultByDate(),
+                    getSuppliers(),
+                    getSupplierCriteriaValues(),
+                ]);
             setCriteria(criteriaRes.data);
+            setLastUpdate(lastUpdateRes.data[0]);
             setSuppliers(suppliersRes.data);
             setSupplierCriteriaValues(scvRes.data);
         };
@@ -90,39 +96,61 @@ const SAWCalculation = () => {
         // Kirim ke API
         // sendResultsToAPI(ranked);
     };
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        },
+    });
 
     const sendResultsToAPI = async (results) => {
         try {
+            Toast.fire({
+                icon: "success",
+                title: "Update data successfully",
+            });
             const payload = results.map((item) => ({
                 supplier_id: item.supplier.id,
                 score: item.score,
                 ranking: item.rank,
             }));
 
-            const response = await axios.post(
-                "http://localhost:3000/api/results",
-                payload
-            );
+            const response = await createResult(payload);
+            console.log(payload);
 
-            console.log("Hasil berhasil dikirim ke API:", response.data);
+            // const response = await axios.post(getResults(), payload);
         } catch (error) {
+            Toast.fire({
+                icon: "error",
+                title: "Update data failed",
+            });
             console.error("Gagal mengirim hasil ke API:", error);
         }
     };
 
     return (
-        <div className="p-4 space-y-4">
+        // <div className="p-4 space-y-4 flex flex-col">
+        <div className="p-6 space-y-4 flex flex-col bg-white rounded shadow-md max-w-8xl mx-auto">
+            <h2 className="text-2xl font-semibold text-gray-700">
+                Data Hasil Keputusan (Metode SAW)
+            </h2>
+            <hr />
             <button
                 onClick={() => sendResultsToAPI(results)}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded w-fit"
             >
-                Perbaharui Data
+                Update Data
             </button>
-
+            <span>Update terakhir : {lastUpdate}</span>
             <Card>
                 <CardContent>
                     <h2 className="text-xl font-bold mb-4">
-                        Matriks Nilai Alternatif (Supplier)
+                        Matriks Nilai Keseluruhan
                     </h2>
                     <table className="w-full table-auto border border-gray-300 text-sm">
                         <thead className="bg-gray-100">
@@ -231,9 +259,7 @@ const SAWCalculation = () => {
 
 export default SAWCalculation;
 
-
 // === TERBARU ===
-
 
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";

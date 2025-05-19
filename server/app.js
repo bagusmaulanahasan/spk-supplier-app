@@ -4,11 +4,32 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-const cors = require('cors');
-app.use(cors({
-    origin: "http://localhost:5173", // ganti dengan URL React kamu
-    credentials: true,
-}));  // Mengizinkan CORS dari semua asal
+const cors = require("cors");
+// app.use(cors({
+//     origin: "http://localhost:5173", // ganti dengan URL React
+//     credentials: true,
+// }));
+
+const allowedOrigins = [
+    "http://localhost:5173", // URL ReactJS
+    "http://192.168.1.59:5173", // URL local
+    "https://d966-36-90-7-44.ngrok-free.app", // URL ngrok
+];
+
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // Jika tidak ada origin (misalnya request Postman atau request server-to-server)
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.indexOf(origin) === -1) {
+                const msg = `Origin ${origin} tidak diizinkan oleh CORS policy.`;
+                return callback(new Error(msg), false);
+            }
+            return callback(null, true);
+        },
+        credentials: true,
+    })
+);
 
 app.use(express.json());
 
@@ -33,6 +54,6 @@ app.use("/api/suppliers", suppliersRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/weights", weightsRoutes);
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);
 });

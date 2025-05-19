@@ -2,7 +2,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 
 exports.getAll = (req, res) => {
-    db.query("SELECT username, role FROM users", (err, results) => {
+    db.query("SELECT id, username, role FROM users", (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });

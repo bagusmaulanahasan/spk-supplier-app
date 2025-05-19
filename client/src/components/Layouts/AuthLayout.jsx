@@ -11,7 +11,7 @@ const AuthLayout = (props) => {
             </p>
             {children}
 
-            <p className="text-sm mt-5 text-center">
+            {/* <p className="text-sm mt-5 text-center">
                 {type === "login"
                     ? "Don't have an account? "
                     : "Already have an account? "}
@@ -27,7 +27,7 @@ const AuthLayout = (props) => {
                         Login
                     </Link>
                 )}
-            </p>
+            </p> */}
         </div>
     );
 };

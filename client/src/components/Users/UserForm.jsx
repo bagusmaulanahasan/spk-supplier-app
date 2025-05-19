@@ -41,7 +41,7 @@ export default function UserForm({
         <div className={`${showForm ? "fixed" : "hidden"} inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50`}>
             <form className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg" onSubmit={handleSubmit}>
                 <h2 className="text-lg font-bold mb-4">
-                    {mode === "edit" ? "Edit User" : "Tambah User"}
+                    {mode === "edit" ? "Edit Pengguna" : "Tambah Pengguna"}
                 </h2>
 
                 <InputForm
@@ -54,7 +54,7 @@ export default function UserForm({
                     onChange={handleChange}
                 />
 
-                <InputForm
+                {/* <InputForm
                     id="Password"
                     htmlFor="Password"
                     name="password"
@@ -62,7 +62,7 @@ export default function UserForm({
                     placeholder={mode === "edit" ? "Kosongkan jika tidak diubah" : "Password"}
                     value={form.password}
                     onChange={handleChange}
-                />
+                /> */}
 
                 <InputForm
                     id="Role"

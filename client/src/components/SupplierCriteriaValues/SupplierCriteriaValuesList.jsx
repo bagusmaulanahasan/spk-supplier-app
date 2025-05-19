@@ -4,6 +4,7 @@ import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
+import Swal from "sweetalert2";
 
 export default function SupplierCriteriaValuesList() {
     const [data, setData] = useState([]);
@@ -61,10 +62,25 @@ export default function SupplierCriteriaValuesList() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this record?")) {
-            await API.deleteSupplierCriteriaValue(id);
-            fetchData();
-        }
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Data akan dihapus secara permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await API.deleteSupplierCriteriaValue(id);
+                fetchData();
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "data berhasil dihapus.",
+                    icon: "success",
+                });
+            }
+        });
     };
 
     const handleSearch = (e) => {
@@ -72,31 +88,52 @@ export default function SupplierCriteriaValuesList() {
         setSearch(term);
         const filtered = data.filter(
             (item) =>
-                item.supplierName.toLowerCase().includes(term) ||
-                item.criteriaName.toLowerCase().includes(term) ||
-                item.value.toLowerCase().includes(term)
+                (item.supplierName || "").toLowerCase().includes(term) ||
+                (item.criteriaName || "").toLowerCase().includes(term) ||
+                String(item.value || "")
+                    .toLowerCase()
+                    .includes(term)
         );
         setFilteredData(filtered);
     };
 
     const handleExport = () => {
-        const exportData = filteredData.map(({ id, supplierName, criteriaName, value }) => ({
-            ID: id,
-            Supplier: supplierName,
-            Criteria: criteriaName,
-            Value: value,
-        }));
+        const exportData = filteredData.map(
+            ({ id, supplierName, criteriaName, value }) => ({
+                ID: id,
+                Supplier: supplierName,
+                Criteria: criteriaName,
+                Value: value,
+            })
+        );
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "SupplierCriteriaValues");
-        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "SupplierCriteriaValues"
+        );
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+        const blob = new Blob([excelBuffer], {
+            type: "application/octet-stream",
+        });
         saveAs(blob, "supplier_criteria_values.xlsx");
     };
 
     const columns = [
-        { name: "Supplier", selector: (row) => row.supplierName, sortable: true },
-        { name: "Criteria", selector: (row) => row.criteriaName, sortable: true },
+        {
+            name: "Supplier",
+            selector: (row) => row.supplierName,
+            sortable: true,
+        },
+        {
+            name: "Criteria",
+            selector: (row) => row.criteriaName,
+            sortable: true,
+        },
         { name: "Value", selector: (row) => row.value, sortable: true },
         {
             name: "Actions",
@@ -123,13 +160,24 @@ export default function SupplierCriteriaValuesList() {
     ];
 
     const customStyles = {
-        rows: { style: { minHeight: "48px" }, stripedStyle: { backgroundColor: "#f9fafb" } },
-        headCells: { style: { backgroundColor: "#1f2937", color: "white", fontWeight: "bold" } },
+        rows: {
+            style: { minHeight: "48px" },
+            stripedStyle: { backgroundColor: "#f9fafb" },
+        },
+        headCells: {
+            style: {
+                backgroundColor: "#1f2937",
+                color: "white",
+                fontWeight: "bold",
+            },
+        },
     };
 
     return (
-        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-6xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700">Supplier Criteria Values Management</h2>
+        <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
+            <h2 className="text-2xl font-semibold text-gray-700">
+                Penilaian Alternatif (Supplier)
+            </h2>
             <hr />
 
             <button
@@ -139,7 +187,7 @@ export default function SupplierCriteriaValuesList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Data
+                Tambah Penilaian Alternatif
             </button>
 
             <SupplierCriteriaValueForm

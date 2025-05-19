@@ -37,6 +37,7 @@
 import { useState } from "react";
 import axios from "axios";
 import InputForm from "../Elements/Input";
+import { login } from "@/api/api";
 
 const FormLogin = () => {
     const [error, setError] = useState("");
@@ -47,7 +48,7 @@ const FormLogin = () => {
         const password = e.target.password.value;
 
         try {
-            const res = await axios.post("http://localhost:3000/api/login", {
+            const res = await login({
                 username,
                 password,
             });

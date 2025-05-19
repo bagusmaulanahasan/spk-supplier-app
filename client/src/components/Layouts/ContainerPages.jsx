@@ -42,15 +42,6 @@ const ContainerPage = (props) => {
     const { children } = props;
     const { isOpen, toggleSidebar } = useSidebarStore();
 
-    let padding = 0;
-    if (isOpen) {
-        padding = 64;
-    } else {
-        padding = 20;
-    }
-
-    console.log(`padding: ${padding}`);
-
     return (
         <div className="flex min-h-screen">
             <SideNav />
@@ -60,7 +51,7 @@ const ContainerPage = (props) => {
                     isOpen ? "ml-64" : "ml-20"
                 }`}
             >
-                <div className="px-6 mt-4.5">{children}</div>
+                <div className="px-6 mt-12">{children}</div>
             </div>
         </div>
     );

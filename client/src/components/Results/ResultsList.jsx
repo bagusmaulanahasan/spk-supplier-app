@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import * as API from "../../api/api";
 import ResultsForm from "./ResultsForm";
@@ -23,8 +24,25 @@ export default function ResultsList() {
     };
 
     const handleDelete = async (id) => {
-        await API.deleteResult(id);
-        fetchData();
+        Swal.fire({
+            title: "Apakah anda yakin?",
+            text: "Data akan dihapus secara permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await API.deleteResult(id);
+                fetchData();
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "data berhasil dihapus.",
+                    icon: "success",
+                });
+            }
+        });
     };
 
     return (
