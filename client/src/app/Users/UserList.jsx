@@ -3,13 +3,11 @@ import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
+import UserForm from "./UserForm";
 import Swal from "sweetalert2";
 
-export default function SupplierCriteriaValuesList() {
-    const [data, setData] = useState([]);
-    const [suppliers, setSuppliers] = useState({});
-    const [criteria, setCriteria] = useState({});
+export default function UserList() {
+    const [users, setUsers] = useState([]);
     const [editing, setEditing] = useState(null);
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
@@ -17,27 +15,9 @@ export default function SupplierCriteriaValuesList() {
 
     const fetchData = async () => {
         try {
-            const [valuesRes, supplierRes, criteriaRes] = await Promise.all([
-                API.getSupplierCriteriaValues(),
-                API.getSuppliers(),
-                API.getCriteria(),
-            ]);
-
-            const supplierMap = {};
-            supplierRes.data.forEach((s) => (supplierMap[s.id] = s.name));
-            const criteriaMap = {};
-            criteriaRes.data.forEach((c) => (criteriaMap[c.id] = c.name));
-
-            const enrichedData = valuesRes.data.map((item) => ({
-                ...item,
-                supplierName: supplierMap[item.supplier_id] || "Unknown",
-                criteriaName: criteriaMap[item.criteria_id] || "Unknown",
-            }));
-
-            setData(enrichedData);
-            setFilteredData(enrichedData);
-            setSuppliers(supplierMap);
-            setCriteria(criteriaMap);
+            const res = await API.getUsers();
+            setUsers(res.data);
+            setFilteredData(res.data);
         } catch (err) {
             console.error("Fetch error:", err);
         }
@@ -50,9 +30,9 @@ export default function SupplierCriteriaValuesList() {
     const handleSubmit = async (form) => {
         try {
             if (editing) {
-                await API.updateSupplierCriteriaValue(editing.id, form);
+                await API.updateUser(editing.id, form);
             } else {
-                await API.createSupplierCriteriaValue(form);
+                await API.createUser(form);
             }
             setEditing(null);
             fetchData();
@@ -60,23 +40,24 @@ export default function SupplierCriteriaValuesList() {
             console.error("Submit error:", err);
         }
     };
-
+    
     const handleDelete = async (id) => {
         Swal.fire({
             title: "Apakah anda yakin?",
             text: "Data akan dihapus secara permanen!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            reverseButtons: true,
+            cancelButtonColor: "#6b7280",
+            confirmButtonColor: "#ef4444",
             confirmButtonText: "Ya, hapus!",
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await API.deleteSupplierCriteriaValue(id);
+                await API.deleteUser(id);
                 fetchData();
                 Swal.fire({
                     title: "Deleted!",
-                    text: "data berhasil dihapus.",
+                    text: "Data berhasil dihapus.",
                     icon: "success",
                 });
             }
@@ -86,55 +67,32 @@ export default function SupplierCriteriaValuesList() {
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-        const filtered = data.filter(
+        const filtered = users.filter(
             (item) =>
-                (item.supplierName || "").toLowerCase().includes(term) ||
-                (item.criteriaName || "").toLowerCase().includes(term) ||
-                String(item.value || "")
-                    .toLowerCase()
-                    .includes(term)
+                item.username.toLowerCase().includes(term) ||
+                item.role.toLowerCase().includes(term)
         );
         setFilteredData(filtered);
     };
 
     const handleExport = () => {
-        const exportData = filteredData.map(
-            ({ id, supplierName, criteriaName, value }) => ({
-                ID: id,
-                Supplier: supplierName,
-                Criteria: criteriaName,
-                Value: value,
-            })
-        );
+        const exportData = filteredData.map(({ id, username, role }) => ({
+            ID: id,
+            Username: username,
+            Role: role,
+        }));
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(
-            workbook,
-            worksheet,
-            "SupplierCriteriaValues"
-        );
-        const excelBuffer = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "array",
-        });
-        const blob = new Blob([excelBuffer], {
-            type: "application/octet-stream",
-        });
-        saveAs(blob, "supplier_criteria_values.xlsx");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        saveAs(blob, "users.xlsx");
     };
 
     const columns = [
-        {
-            name: "Supplier",
-            selector: (row) => row.supplierName,
-            sortable: true,
-        },
-        {
-            name: "Criteria",
-            selector: (row) => row.criteriaName,
-            sortable: true,
-        },
-        { name: "Value", selector: (row) => row.value, sortable: true },
+        { name: "Username", selector: (row) => row.username, sortable: true },
+        { name: "Nama", selector: (row) => row.name, sortable: true },
+        { name: "Role", selector: (row) => row.role, sortable: true },
         {
             name: "Actions",
             cell: (row) => (
@@ -160,24 +118,13 @@ export default function SupplierCriteriaValuesList() {
     ];
 
     const customStyles = {
-        rows: {
-            style: { minHeight: "48px" },
-            stripedStyle: { backgroundColor: "#f9fafb" },
-        },
-        headCells: {
-            style: {
-                backgroundColor: "#1f2937",
-                color: "white",
-                fontWeight: "bold",
-            },
-        },
+        rows: { style: { minHeight: "48px" }, stripedStyle: { backgroundColor: "#f9fafb" } },
+        headCells: { style: { backgroundColor: "#1f2937", color: "white", fontWeight: "bold" } },
     };
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700">
-                Penilaian Alternatif (Supplier)
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-700">Data Pengguna</h2>
             <hr />
 
             <button
@@ -187,10 +134,10 @@ export default function SupplierCriteriaValuesList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Penilaian Alternatif
+                Tambah Pengguna
             </button>
 
-            <SupplierCriteriaValueForm
+            <UserForm
                 mode={editing ? "edit" : "add"}
                 onSubmit={handleSubmit}
                 initialData={editing}

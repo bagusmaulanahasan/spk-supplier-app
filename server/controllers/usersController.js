@@ -2,7 +2,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 
 exports.getAll = (req, res) => {
-    db.query("SELECT id, username, role FROM users", (err, results) => {
+    db.query("SELECT id, username, name, role FROM users", (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
@@ -10,7 +10,7 @@ exports.getAll = (req, res) => {
 
 exports.getById = (req, res) => {
     db.query(
-        "SELECT username, role FROM users WHERE id = ?",
+        "SELECT username, name, role FROM users WHERE id = ?",
         [req.params.id],
         (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -20,12 +20,12 @@ exports.getById = (req, res) => {
 };
 
 exports.create = async (req, res) => {
-    const { username, password, role } = req.body;
+    const { username, password, name, role } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10); // saltRounds = 10
         db.query(
-            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-            [username, hashedPassword, role],
+            "INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)",
+            [username, hashedPassword, name, role],
             (err, result) => {
                 if (err) return res.status(500).json({ error: err.message });
                 res.json({ id: result.insertId, username, role });
@@ -37,12 +37,12 @@ exports.create = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-    const { username, password, role } = req.body;
+    const { username, password, name, role } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10); // saltRounds = 10
         db.query(
-            "UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?",
-            [username, hashedPassword, role, req.params.id],
+            "UPDATE users SET username = ?, password = ?, name = ?, role = ? WHERE id = ?",
+            [username, hashedPassword, name, role, req.params.id],
             (err) => {
                 if (err) return res.status(500).json({ error: err.message });
                 res.json({ message: "User updated successfully" });

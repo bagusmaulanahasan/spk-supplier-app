@@ -1,13 +1,13 @@
 import Swal from "sweetalert2";
-import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import CriteriaForm from "./CriteriaForm";
+import SupplierForm from "./SupplierForm";
+import { useEffect, useState } from "react";
 
-export default function CriteriaList() {
-    const [criteria, setCriteria] = useState([]);
+export default function SupplierList() {
+    const [suppliers, setSuppliers] = useState([]);
     const [editing, setEditing] = useState(null);
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
@@ -15,8 +15,8 @@ export default function CriteriaList() {
 
     const fetchData = async () => {
         try {
-            const res = await API.getCriteria();
-            setCriteria(res.data);
+            const res = await API.getSuppliers();
+            setSuppliers(res.data);
             setFilteredData(res.data);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -30,9 +30,9 @@ export default function CriteriaList() {
     const handleSubmit = async (form) => {
         try {
             if (editing) {
-                await API.updateCriteria(editing.id, form);
+                await API.updateSupplier(editing.id, form);
             } else {
-                await API.createCriteria(form);
+                await API.createSupplier(form);
             }
             setEditing(null);
             fetchData();
@@ -43,20 +43,21 @@ export default function CriteriaList() {
 
     const handleDelete = async (id) => {
         Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
+            title: "Apakah anda yakin?",
+            text: "Data akan dihapus secara permanen!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
+            reverseButtons: true,
+            cancelButtonColor: "#6b7280",
+            confirmButtonColor: "#ef4444",
+            confirmButtonText: "Ya, hapus!",
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await API.deleteCriteria(id);
+                await API.deleteSupplier(id);
                 fetchData();
                 Swal.fire({
                     title: "Deleted!",
-                    text: "Your file has been deleted.",
+                    text: "Data berhasil dihapus.",
                     icon: "success",
                 });
             }
@@ -66,10 +67,10 @@ export default function CriteriaList() {
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-        const filtered = criteria.filter(
+        const filtered = suppliers.filter(
             (item) =>
-                item.name.toLowerCase().includes(term) ||
-                item.type.toLowerCase().includes(term)
+                item.initial.toLowerCase().includes(term) ||
+                item.name.toLowerCase().includes(term)
         );
         setFilteredData(filtered);
     };
@@ -77,7 +78,7 @@ export default function CriteriaList() {
     const handleExport = () => {
         const worksheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Criteria");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Suppliers");
         const excelBuffer = XLSX.write(workbook, {
             bookType: "xlsx",
             type: "array",
@@ -85,13 +86,12 @@ export default function CriteriaList() {
         const blob = new Blob([excelBuffer], {
             type: "application/octet-stream",
         });
-        saveAs(blob, "criteria.xlsx");
+        saveAs(blob, "suppliers.xlsx");
     };
 
     const columns = [
+        { name: "Inisial", selector: (row) => row.initial, sortable: true },
         { name: "Nama", selector: (row) => row.name, sortable: true },
-        { name: "Type", selector: (row) => row.type, sortable: true },
-        { name: "Weight", selector: (row) => row.weight, sortable: true },
         {
             name: "Actions",
             cell: (row) => (
@@ -133,7 +133,7 @@ export default function CriteriaList() {
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
             <h2 className="text-2xl font-semibold text-gray-700">
-                Data Kriteria
+                Data Alternatif (Supplier)
             </h2>
             <hr />
 
@@ -144,10 +144,10 @@ export default function CriteriaList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Kriteria
+                Tambah Supplier
             </button>
 
-            <CriteriaForm
+            <SupplierForm
                 mode={editing ? "edit" : "add"}
                 onSubmit={handleSubmit}
                 initialData={editing}

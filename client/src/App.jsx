@@ -9,11 +9,15 @@ import SupplierCriteriaValuesPage from "./pages/supplierCriteriaValuesPage";
 import Dashboard from "./pages/dashboard";
 import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
+import HomePage from "./pages/homePage";
+import ResultsList from "./app/Results/ResultsList";
+
 
 export default function App() {
     return (
         <Router>
             <Routes>
+                <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage/>} />
                 <Route path="/dashboard" element={<Dashboard />} />

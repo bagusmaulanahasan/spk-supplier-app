@@ -36,7 +36,8 @@
 // export default ContainerPage;
 
 import useSidebarStore from "../../store/sideBarStore";
-import SideNav from "../Fragments/SideNav";
+import SideNav from "./SideNav";
+import TopNavPrivate from "./TopNavPrivate";
 
 const ContainerPage = (props) => {
     const { children } = props;
@@ -45,12 +46,12 @@ const ContainerPage = (props) => {
     return (
         <div className="flex min-h-screen">
             <SideNav />
-
             <div
-                className={`flex-1 p-5 w-96 transition-all duration-300 ease-in-out ${
+                className={`flex flex-col flex-1 px-5 w-96 transition-all duration-300 ease-in-out ${
                     isOpen ? "ml-64" : "ml-20"
                 }`}
             >
+                <TopNavPrivate></TopNavPrivate>
                 <div className="px-6 mt-12">{children}</div>
             </div>
         </div>

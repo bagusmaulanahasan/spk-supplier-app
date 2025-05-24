@@ -1,10 +1,10 @@
+import UserList from "@/app/Users/UserList";
 import ContainerPage from "@/components/Layouts/ContainerPages";
-import Users from "../components/Users/UserList";
 
 export default function SuppliersPage() {
     return (
         <ContainerPage>
-            <Users />
+            <UserList />
         </ContainerPage>  
     );
 }

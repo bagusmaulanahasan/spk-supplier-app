@@ -54,7 +54,7 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.isAdminOrManager = (req, res, next) => {
-    if (req.user.role === "manager") {
+    if (req.user.role === "kepala bagian") {
         next();
     } else {
         return res.status(403).json({ message: "Forbidden: role tidak cukup" });

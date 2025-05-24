@@ -1,4 +1,4 @@
-import listSideNav from "./ListSideNav";
+import listSideNav from "../Fragments/ListSideNav";
 import { Link, useLocation } from "react-router-dom";
 import useSidebarStore from "../../store/sideBarStore";
 import { useNavigate } from "react-router-dom";
@@ -18,11 +18,11 @@ const SideNav = (props) => {
             >
                 <div className="flex justify-between items-center">
                     <h1
-                        className={`text-xl font-bold duration-300 ml-2 ${
+                        className={`text-xl font-bold duration-300 w-36 text-center ${
                             !isOpen && "scale-0"
                         }`}
                     >
-                        SPK SAW
+                        Menu SPK
                     </h1>
                     <button
                         onClick={toggleSidebar}
@@ -31,6 +31,7 @@ const SideNav = (props) => {
                         {isOpen ? "<" : ">"}
                     </button>
                 </div>
+                <hr />
                 <ul className="pt-8 flex flex-col gap-2">
                     {listSideNav.map((item, index) => (
                         <li key={index}>

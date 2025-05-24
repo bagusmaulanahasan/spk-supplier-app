@@ -1,14 +1,15 @@
-import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import CriteriaValuesForm from "./CriteriaValuesForm";
+import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
+import Swal from "sweetalert2";
 
-export default function CriteriaValuesList() {
-    const [criteriaValues, setCriteriaValues] = useState([]);
-    const [criteriaList, setCriteriaList] = useState([]);
+export default function SupplierCriteriaValuesList() {
+    const [data, setData] = useState([]);
+    const [suppliers, setSuppliers] = useState({});
+    const [criteria, setCriteria] = useState({});
     const [editing, setEditing] = useState(null);
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
@@ -16,34 +17,42 @@ export default function CriteriaValuesList() {
 
     const fetchData = async () => {
         try {
-            const res = await API.getCriteriaValues();
-            setCriteriaValues(res.data);
-            setFilteredData(res.data);
+            const [valuesRes, supplierRes, criteriaRes] = await Promise.all([
+                API.getSupplierCriteriaValues(),
+                API.getSuppliers(),
+                API.getCriteria(),
+            ]);
+
+            const supplierMap = {};
+            supplierRes.data.forEach((s) => (supplierMap[s.id] = s.name));
+            const criteriaMap = {};
+            criteriaRes.data.forEach((c) => (criteriaMap[c.id] = c.name));
+
+            const enrichedData = valuesRes.data.map((item) => ({
+                ...item,
+                supplierName: supplierMap[item.supplier_id] || "Unknown",
+                criteriaName: criteriaMap[item.criteria_id] || "Unknown",
+            }));
+
+            setData(enrichedData);
+            setFilteredData(enrichedData);
+            setSuppliers(supplierMap);
+            setCriteria(criteriaMap);
         } catch (err) {
             console.error("Fetch error:", err);
         }
     };
 
-    const fetchCriteriaList = async () => {
-        try {
-            const res = await API.getCriteria();
-            setCriteriaList(res.data);
-        } catch (err) {
-            console.error("Fetch criteria error:", err);
-        }
-    };
-
     useEffect(() => {
         fetchData();
-        fetchCriteriaList();
     }, []);
 
     const handleSubmit = async (form) => {
         try {
             if (editing) {
-                await API.updateCriteriaValue(editing.id, form);
+                await API.updateSupplierCriteriaValue(editing.id, form);
             } else {
-                await API.createCriteriaValue(form);
+                await API.createSupplierCriteriaValue(form);
             }
             setEditing(null);
             fetchData();
@@ -58,16 +67,17 @@ export default function CriteriaValuesList() {
             text: "Data akan dihapus secara permanen!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            reverseButtons: true,
+            cancelButtonColor: "#6b7280",
+            confirmButtonColor: "#ef4444",
             confirmButtonText: "Ya, hapus!",
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await API.deleteCriteriaValue(id);
+                await API.deleteSupplierCriteriaValue(id);
                 fetchData();
                 Swal.fire({
                     title: "Deleted!",
-                    text: "data berhasil dihapus.",
+                    text: "Data berhasil dihapus.",
                     icon: "success",
                 });
             }
@@ -77,30 +87,33 @@ export default function CriteriaValuesList() {
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-
-        const filtered = criteriaValues.filter((item) => {
-            const valueFiltered = String(item.value || "").toLowerCase();
-            const descriptionFiltered = (item.description || "").toLowerCase();
-            const criteriaNameFiltered = (
-                criteriaList.find(
-                    (criteria) => criteria.id === item.criteria_id
-                )?.name || ""
-            ).toLowerCase();
-
-            return (
-                valueFiltered.includes(term) ||
-                descriptionFiltered.includes(term) ||
-                criteriaNameFiltered.includes(term)
-            );
-        });
-
+        const filtered = data.filter(
+            (item) =>
+                (item.supplierName || "").toLowerCase().includes(term) ||
+                (item.criteriaName || "").toLowerCase().includes(term) ||
+                String(item.value || "")
+                    .toLowerCase()
+                    .includes(term)
+        );
         setFilteredData(filtered);
     };
 
     const handleExport = () => {
-        const worksheet = XLSX.utils.json_to_sheet(filteredData);
+        const exportData = filteredData.map(
+            ({ id, supplierName, criteriaName, value }) => ({
+                ID: id,
+                Supplier: supplierName,
+                Criteria: criteriaName,
+                Value: value,
+            })
+        );
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Criteria Values");
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "SupplierCriteriaValues"
+        );
         const excelBuffer = XLSX.write(workbook, {
             bookType: "xlsx",
             type: "array",
@@ -108,31 +121,21 @@ export default function CriteriaValuesList() {
         const blob = new Blob([excelBuffer], {
             type: "application/octet-stream",
         });
-        saveAs(blob, "criteria-values.xlsx");
+        saveAs(blob, "supplier_criteria_values.xlsx");
     };
 
     const columns = [
         {
-            name: "Nama Kriteria",
-            selector: (row) => {
-                const criteria = criteriaList.find(
-                    (c) => c.id === row.criteria_id
-                );
-                return criteria ? criteria.name : "Unknown";
-            },
+            name: "Supplier",
+            selector: (row) => row.supplierName,
             sortable: true,
         },
         {
-            name: "Nilai",
-            selector: (row) => row.value,
-            sortable: true,
-            cell: (row) => row.value,
-        },
-        {
-            name: "Deskripsi",
-            selector: (row) => row.description,
+            name: "Criteria",
+            selector: (row) => row.criteriaName,
             sortable: true,
         },
+        { name: "Value", selector: (row) => row.value, sortable: true },
         {
             name: "Actions",
             cell: (row) => (
@@ -162,16 +165,6 @@ export default function CriteriaValuesList() {
             style: { minHeight: "48px" },
             stripedStyle: { backgroundColor: "#f9fafb" },
         },
-        columns: {
-            value: {
-                style: {
-                    maxWidth: "20px", // Tentukan maxWidth kolom Nilai
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                },
-            },
-        },
         headCells: {
             style: {
                 backgroundColor: "#1f2937",
@@ -184,7 +177,7 @@ export default function CriteriaValuesList() {
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
             <h2 className="text-2xl font-semibold text-gray-700">
-                Penilaian Kriteria
+                Penilaian Alternatif (Supplier)
             </h2>
             <hr />
 
@@ -195,16 +188,15 @@ export default function CriteriaValuesList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Penilaian Kriteria
+                Tambah Penilaian Alternatif
             </button>
 
-            <CriteriaValuesForm
+            <SupplierCriteriaValueForm
                 mode={editing ? "edit" : "add"}
                 onSubmit={handleSubmit}
                 initialData={editing}
                 showForm={showForm}
                 setShowForm={setShowForm}
-                criteriaList={criteriaList}
             />
 
             <div className="flex justify-between items-center mb-4">

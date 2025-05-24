@@ -8,6 +8,6 @@ router.get("/", verifyToken, isAdminOrManager, controller.getAll);
 router.get("/:id", verifyToken, isAdminOrManager, controller.getById);
 router.post("/", verifyToken, isAdminOrManager, controller.create);
 router.put("/:id", verifyToken, isAdminOrManager, controller.update);
-router.delete("/:id",  controller.delete);
+router.delete("/:id", verifyToken, isAdminOrManager, controller.delete);
 
 module.exports = router;

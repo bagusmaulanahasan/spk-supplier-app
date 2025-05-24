@@ -1,38 +1,31 @@
 import { useEffect, useState } from "react";
-import InputForm from "../Elements/Input";
-import Swal from 'sweetalert2'
+import InputForm from "@/components/Elements/Input";
 
-export default function CriteriaForm({
+export default function CriteriaValuesForm({
     mode = "add",
     onSubmit,
     initialData = {},
     showForm,
     setShowForm,
+    criteriaList, // daftar kriteria yang akan dipilih
 }) {
     const [form, setForm] = useState({
-        name: "",
+        criteria_id: "",
+        value: "",
         description: "",
-        type: "cost",
-        weight: 0.0,
     });
 
     useEffect(() => {
         if (mode === "edit" && initialData) {
             setForm(initialData);
         } else {
-            setForm({ name: "", description: "", type: "cost", weight: 0.0 });
+            setForm({ criteria_id: "", value: "", description: "" });
         }
     }, [initialData, mode, showForm]);
 
     const handleChange = (e) => {
-        const { name, value, type } = e.target;
-
-        let newValue = value;
-        if (type === "number") {
-            newValue = value === "" ? "" : parseFloat(value);
-        }
-
-        setForm({ ...form, [name]: newValue });
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
     };
 
     const handleSubmit = (e) => {
@@ -52,15 +45,34 @@ export default function CriteriaForm({
                 onSubmit={handleSubmit}
             >
                 <h2 className="text-lg font-bold mb-4">
-                    {mode === "edit" ? "Edit Kriteria" : "Tambah Kriteria"}
+                    {mode === "edit" ? "Edit Penilaian Kriteria" : "Tambah Penilaian Kriteria"}
                 </h2>
+                <div className="mb-4">
+                    <label className="block text-slate-700 text-sm font-bold mb-2">
+                        Nama Kriteria
+                    </label>
+                    <select
+                        name="criteria_id"
+                        className="text-sm border rounded w-full py-2 px-3 text-slate-700"
+                        value={form.criteria_id}
+                        onChange={handleChange}
+                    >
+                        <option value="">Pilih Kriteria</option>
+                        {criteriaList.map((criteria) => (
+                            <option key={criteria.id} value={criteria.id}>
+                                {criteria.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 <InputForm
-                    id="Nama"
-                    htmlFor="Nama"
-                    name="name"
+                    id="Value"
+                    htmlFor="Value"
+                    name="value"
                     type="text"
-                    placeholder="Nama Kriteria"
-                    value={form.name}
+                    placeholder="Nilai"
+                    value={form.value}
                     onChange={handleChange}
                 />
                 <InputForm
@@ -68,34 +80,12 @@ export default function CriteriaForm({
                     htmlFor="Deskripsi"
                     name="description"
                     as="textarea"
-                    placeholder="Deskripsi Kriteria"
+                    placeholder="Deskripsi Nilai"
                     rows="4"
                     value={form.description}
                     onChange={handleChange}
                 />
-                <InputForm
-                    id="Bobot"
-                    htmlFor="Bobot"
-                    name="weight"
-                    type="number"
-                    placeholder="Bobot Kriteria"
-                    value={form.weight}
-                    onChange={handleChange}
-                />
-                <div className="mb-4">
-                    <label className="block text-slate-700 text-sm font-bold mb-2">
-                        Kategori
-                    </label>
-                    <select
-                        name="type"
-                        className="text-sm border rounded w-full py-2 px-3 text-slate-700"
-                        value={form.type}
-                        onChange={handleChange}
-                    >
-                        <option value="cost">Cost</option>
-                        <option value="benefit">Benefit</option>
-                    </select>
-                </div>
+
                 <div className="flex justify-end gap-2">
                     <button
                         type="button"
@@ -110,7 +100,7 @@ export default function CriteriaForm({
                     >
                         {mode === "edit"
                             ? "Simpan Perubahan"
-                            : "Tambah Kriteria"}
+                            : "Tambah Nilai Kriteria"}
                     </button>
                 </div>
             </form>

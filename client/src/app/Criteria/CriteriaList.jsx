@@ -1,13 +1,14 @@
 import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import SupplierForm from "./SupplierForm";
-import { useEffect, useState } from "react";
+import CriteriaForm from "./CriteriaForm";
+import { max } from "date-fns";
 
-export default function SupplierList() {
-    const [suppliers, setSuppliers] = useState([]);
+export default function CriteriaList() {
+    const [criteria, setCriteria] = useState([]);
     const [editing, setEditing] = useState(null);
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
@@ -15,8 +16,8 @@ export default function SupplierList() {
 
     const fetchData = async () => {
         try {
-            const res = await API.getSuppliers();
-            setSuppliers(res.data);
+            const res = await API.getCriteria();
+            setCriteria(res.data);
             setFilteredData(res.data);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -30,9 +31,9 @@ export default function SupplierList() {
     const handleSubmit = async (form) => {
         try {
             if (editing) {
-                await API.updateSupplier(editing.id, form);
+                await API.updateCriteria(editing.id, form);
             } else {
-                await API.createSupplier(form);
+                await API.createCriteria(form);
             }
             setEditing(null);
             fetchData();
@@ -47,16 +48,17 @@ export default function SupplierList() {
             text: "Data akan dihapus secara permanen!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            reverseButtons: true,
+            cancelButtonColor: "#6b7280",
+            confirmButtonColor: "#ef4444",
             confirmButtonText: "Ya, hapus!",
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await API.deleteSupplier(id);
+                await API.deleteCriteria(id);
                 fetchData();
                 Swal.fire({
                     title: "Deleted!",
-                    text: "data berhasil dihapus.",
+                    text: "Data berhasil dihapus.",
                     icon: "success",
                 });
             }
@@ -66,10 +68,10 @@ export default function SupplierList() {
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-        const filtered = suppliers.filter(
+        const filtered = criteria.filter(
             (item) =>
-                item.initial.toLowerCase().includes(term) ||
-                item.name.toLowerCase().includes(term)
+                item.name.toLowerCase().includes(term) ||
+                item.type.toLowerCase().includes(term)
         );
         setFilteredData(filtered);
     };
@@ -77,7 +79,7 @@ export default function SupplierList() {
     const handleExport = () => {
         const worksheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Suppliers");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Criteria");
         const excelBuffer = XLSX.write(workbook, {
             bookType: "xlsx",
             type: "array",
@@ -85,12 +87,13 @@ export default function SupplierList() {
         const blob = new Blob([excelBuffer], {
             type: "application/octet-stream",
         });
-        saveAs(blob, "suppliers.xlsx");
+        saveAs(blob, "criteria.xlsx");
     };
 
     const columns = [
-        { name: "Inisial", selector: (row) => row.initial, sortable: true },
         { name: "Nama", selector: (row) => row.name, sortable: true },
+        { name: "Type", selector: (row) => row.type, sortable: true },
+        { name: "Weight", selector: (row) => row.weight, sortable: true },
         {
             name: "Actions",
             cell: (row) => (
@@ -117,7 +120,6 @@ export default function SupplierList() {
 
     const customStyles = {
         rows: {
-            style: { minHeight: "48px" },
             stripedStyle: { backgroundColor: "#f9fafb" },
         },
         headCells: {
@@ -132,7 +134,7 @@ export default function SupplierList() {
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
             <h2 className="text-2xl font-semibold text-gray-700">
-                Data Alternatif (Supplier)
+                Data Kriteria
             </h2>
             <hr />
 
@@ -143,10 +145,10 @@ export default function SupplierList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Supplier
+                Tambah Kriteria
             </button>
 
-            <SupplierForm
+            <CriteriaForm
                 mode={editing ? "edit" : "add"}
                 onSubmit={handleSubmit}
                 initialData={editing}

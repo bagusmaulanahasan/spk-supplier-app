@@ -8,7 +8,7 @@ import {
     CheckCircle,
 } from "lucide-react";
 
-const menuManagerOnly = {
+const menuKepalaBagian = {
     title: "Data Pengguna", 
     icon: <Users size={18} />, 
     path: "/pengguna" 
@@ -20,7 +20,7 @@ const listSideNav = [
         icon: <Home size={18} />,
         path: "/dashboard",
     },
-    ...(localStorage.getItem("role") === "manager" ? [menuManagerOnly] : []),
+    ...(localStorage.getItem("role") === "kepala bagian" ? [menuKepalaBagian] : []),
     {
         title: "Data Alternatif",
         icon: <ListOrdered size={18} />,
@@ -32,14 +32,14 @@ const listSideNav = [
         path: "/kriteria" 
     },
     {
-        title: "Penilaian Alternatif",
-        icon: <FileBarChart2 size={18} />,
-        path: "/penilaian-alternatif",
-    },
-    {
         title: "Penilaian Kriteria",
         icon: <Calculator size={18} />,
         path: "/penilaian-kriteria",
+    },
+    {
+        title: "Penilaian Alternatif",
+        icon: <FileBarChart2 size={18} />,
+        path: "/penilaian-alternatif",
     },
     //     title: "Proses Perhitungan",
     //     icon: <Calculator size={18} />,

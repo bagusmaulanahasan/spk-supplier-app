@@ -34,10 +34,11 @@
 
 // export default FormLogin;
 
-import { useState } from "react";
-import axios from "axios";
 import InputForm from "../Elements/Input";
+import { useState } from "react";
 import { login } from "@/api/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const FormLogin = () => {
     const [error, setError] = useState("");
@@ -53,15 +54,16 @@ const FormLogin = () => {
                 password,
             });
 
-            console.log("Response Login:", res.data); // tambahkan ini
+            console.log("Response Login:", res.data); // Cek bug
             const { token, role } = res.data;
 
-            if (role === "manager" || role === "admin") {
+            if (role === "admin" || role === "kepala bagian") {
+                localStorage.setItem("username", username);
                 localStorage.setItem("token", token);
                 localStorage.setItem("role", role);
                 window.location.href = "/dashboard";
             } else {
-                setError("Akses ditolak. Anda bukan admin atau manager.");
+                setError("Akses ditolak. Anda bukan admin atau kepala bagian.");
             }
         } catch (err) {
             console.error("Login gagal:", err);
@@ -70,18 +72,32 @@ const FormLogin = () => {
     };
 
     return (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="relative">
+            <div className="absolute">
+                <FontAwesomeIcon
+                    icon={faLock}
+                    className="absolute left-3 top-[2.6em] transform -translate-y-1/2 text-gray-200 text-lg"
+                />
+            </div>
             <InputForm
                 htmlFor="username"
                 type="text"
-                placeholder="your username here..."
+                placeholder="Masukkan username"
                 name="username"
+                className="pl-10"
             />
+            <div className="absolute">
+                <FontAwesomeIcon
+                    icon={faUser}
+                    className="absolute left-3 top-[2.6em] transform -translate-y-1/2 text-gray-200 text-lg"
+                />
+            </div>
             <InputForm
                 htmlFor="password"
                 type="password"
-                placeholder="******"
+                placeholder="Masukkan password"
                 name="password"
+                className="pl-10" 
             />
             <button
                 className="h-10 px-6 font-semibold rounded-md text-white bg-blue-600 w-full cursor-pointer"

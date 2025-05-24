@@ -38,7 +38,7 @@ export default function ResultsList() {
                 fetchData();
                 Swal.fire({
                     title: "Deleted!",
-                    text: "data berhasil dihapus.",
+                    text: "Data berhasil dihapus.",
                     icon: "success",
                 });
             }

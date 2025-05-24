@@ -1,5 +1,6 @@
+import InputForm from "@/components/Elements/Input";
 import { useEffect, useState } from "react";
-import InputForm from "../Elements/Input";
+
 
 export default function SupplierForm({
     mode = "add",

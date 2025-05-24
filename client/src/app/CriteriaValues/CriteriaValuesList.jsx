@@ -1,13 +1,14 @@
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import UserForm from "./UserForm";
-import Swal from "sweetalert2";
+import CriteriaValuesForm from "./CriteriaValuesForm";
 
-export default function UserList() {
-    const [users, setUsers] = useState([]);
+export default function CriteriaValuesList() {
+    const [criteriaValues, setCriteriaValues] = useState([]);
+    const [criteriaList, setCriteriaList] = useState([]);
     const [editing, setEditing] = useState(null);
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
@@ -15,24 +16,34 @@ export default function UserList() {
 
     const fetchData = async () => {
         try {
-            const res = await API.getUsers();
-            setUsers(res.data);
+            const res = await API.getCriteriaValues();
+            setCriteriaValues(res.data);
             setFilteredData(res.data);
         } catch (err) {
             console.error("Fetch error:", err);
         }
     };
 
+    const fetchCriteriaList = async () => {
+        try {
+            const res = await API.getCriteria();
+            setCriteriaList(res.data);
+        } catch (err) {
+            console.error("Fetch criteria error:", err);
+        }
+    };
+
     useEffect(() => {
         fetchData();
+        fetchCriteriaList();
     }, []);
 
     const handleSubmit = async (form) => {
         try {
             if (editing) {
-                await API.updateUser(editing.id, form);
+                await API.updateCriteriaValue(editing.id, form);
             } else {
-                await API.createUser(form);
+                await API.createCriteriaValue(form);
             }
             setEditing(null);
             fetchData();
@@ -40,23 +51,24 @@ export default function UserList() {
             console.error("Submit error:", err);
         }
     };
-    
+
     const handleDelete = async (id) => {
         Swal.fire({
             title: "Apakah anda yakin?",
             text: "Data akan dihapus secara permanen!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            reverseButtons: true,
+            cancelButtonColor: "#6b7280",
+            confirmButtonColor: "#ef4444",
             confirmButtonText: "Ya, hapus!",
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await API.deleteUser(id);
+                await API.deleteCriteriaValue(id);
                 fetchData();
                 Swal.fire({
                     title: "Deleted!",
-                    text: "data berhasil dihapus.",
+                    text: "Data berhasil dihapus.",
                     icon: "success",
                 });
             }
@@ -66,31 +78,65 @@ export default function UserList() {
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-        const filtered = users.filter(
-            (item) =>
-                item.username.toLowerCase().includes(term) ||
-                item.role.toLowerCase().includes(term)
-        );
+
+        const filtered = criteriaValues.filter((item) => {
+            const valueFiltered = String(item.value || "").toLowerCase();
+            const descriptionFiltered = (item.description || "").toLowerCase();
+            const criteriaNameFiltered = (
+                criteriaList.find(
+                    (criteria) => criteria.id === item.criteria_id
+                )?.name || ""
+            ).toLowerCase();
+
+            return (
+                valueFiltered.includes(term) ||
+                descriptionFiltered.includes(term) ||
+                criteriaNameFiltered.includes(term)
+            );
+        });
+
         setFilteredData(filtered);
     };
 
     const handleExport = () => {
-        const exportData = filteredData.map(({ id, username, role }) => ({
-            ID: id,
-            Username: username,
-            Role: role,
-        }));
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const worksheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
-        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-        saveAs(blob, "users.xlsx");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Criteria Values");
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+        const blob = new Blob([excelBuffer], {
+            type: "application/octet-stream",
+        });
+        saveAs(blob, "criteria-values.xlsx");
     };
 
     const columns = [
-        { name: "Username", selector: (row) => row.username, sortable: true },
-        { name: "Role", selector: (row) => row.role, sortable: true },
+        {
+            name: "Nama Kriteria",
+            selector: (row) => {
+                const criteria = criteriaList.find(
+                    (c) => c.id === row.criteria_id
+                );
+                return criteria ? criteria.name : "Unknown";
+            },
+            sortable: true,
+            maxWidth: "22em",
+        },
+        {
+            name: "Nilai",
+            selector: (row) => row.value,
+            sortable: true,
+            cell: (row) => row.value,
+            maxWidth: "10em",
+
+        },
+        {
+            name: "Deskripsi",
+            selector: (row) => row.description,
+            sortable: true,
+        },
         {
             name: "Actions",
             cell: (row) => (
@@ -112,17 +158,37 @@ export default function UserList() {
                     </button>
                 </div>
             ),
+            maxWidth: "15em",
         },
     ];
 
     const customStyles = {
-        rows: { style: { minHeight: "48px" }, stripedStyle: { backgroundColor: "#f9fafb" } },
-        headCells: { style: { backgroundColor: "#1f2937", color: "white", fontWeight: "bold" } },
+        rows: {
+            stripedStyle: { backgroundColor: "#f9fafb" },
+        },
+        columns: {
+            value: {
+                style: {
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                },
+            },
+        },
+        headCells: {
+            style: {
+                backgroundColor: "#1f2937",
+                color: "white",
+                fontWeight: "bold",
+            },
+        },
     };
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-700">Data Pengguna</h2>
+            <h2 className="text-2xl font-semibold text-gray-700">
+                Penilaian Kriteria
+            </h2>
             <hr />
 
             <button
@@ -132,15 +198,16 @@ export default function UserList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Pengguna
+                Tambah Penilaian Kriteria
             </button>
 
-            <UserForm
+            <CriteriaValuesForm
                 mode={editing ? "edit" : "add"}
                 onSubmit={handleSubmit}
                 initialData={editing}
                 showForm={showForm}
                 setShowForm={setShowForm}
+                criteriaList={criteriaList}
             />
 
             <div className="flex justify-between items-center mb-4">
@@ -166,6 +233,8 @@ export default function UserList() {
                 highlightOnHover
                 striped
                 customStyles={customStyles}
+                defaultSortField="Nama Kriteria" 
+                defaultSortAsc={false}  
             />
         </div>
     );

@@ -28,7 +28,7 @@ exports.login = (req, res) => {
             }
 
             // Cek role untuk akses
-            if (user.role !== "manager" && user.role !== "admin") {
+            if (user.role !== "admin" && user.role !== "kepala bagian") {
                 return res
                     .status(403)
                     .json({ message: "Akses ditolak. Role tidak sesuai." });

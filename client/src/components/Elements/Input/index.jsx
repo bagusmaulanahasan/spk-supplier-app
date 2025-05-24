@@ -1,5 +1,6 @@
 const InputForm = (props) => {
   const {
+    mode,
     onChange,
     value,
     htmlFor,
@@ -8,12 +9,15 @@ const InputForm = (props) => {
     placeholder,
     className = '',
     as = 'input', // 'input', 'textarea', or 'select'
-    children,      // for select options
+    children,     // for select options
     ...rest
   } = props;
 
   const commonClasses =
     `text-sm border rounded w-full py-2 px-3 text-slate-700 placeholder:opacity-50 ${className}`;
+
+  // Hanya input selain password yang required secara default
+  const isRequired = type !== 'password';
 
   return (
     <div className="mb-6">
@@ -33,7 +37,7 @@ const InputForm = (props) => {
           placeholder={placeholder}
           className={commonClasses}
           {...rest}
-          required
+          required={isRequired}
         />
       ) : as === 'select' ? (
         <select
@@ -43,7 +47,7 @@ const InputForm = (props) => {
           name={name}
           className={commonClasses}
           {...rest}
-          required
+          required={isRequired}
         >
           {children}
         </select>
@@ -57,7 +61,7 @@ const InputForm = (props) => {
           placeholder={placeholder}
           className={commonClasses}
           {...rest}
-          required
+          required={isRequired}
         />
       )}
     </div>
