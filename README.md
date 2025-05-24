@@ -1,35 +1,48 @@
-# 📦 Supplier Management App
+# SPK Supplier Terbaik - Metode Simple Additive Weighting
 
-Sebuah aplikasi berbasis ReactJS untuk mengelola data Supplier, Kriteria, dan Penilaian secara dinamis. 
-Project ini menggunakan data awal berbentuk JSON dan menyediakan fitur CRUD (Create, Read, Update, Delete).
+Aplikasi web ini merupakan Sistem Penunjang Keputusan (SPK) menggunakan metode SAW (Simple Additive Weighting) untuk menentukan supplier terbaik di CV xyz, sebuah perusahaan yang bergerak di bidang supplier aksesoris hotel.
 
-## 🚀 Tech Stack
+## 🛠 Tech Stack
 
-- [ReactJS](https://react.dev/)
-- [TailwindCSS](https://tailwindcss.com/)
-- [JSON Data](https://www.json.org/)
+- **Frontend**: ReactJS, TailwindCSS, SweetAlert, ShadCN
+- **Backend**: ExpressJS (Node.js)
+- **Database**: MySQL
 
-## 📂 Struktur Data
+## 👥 Role Pengguna
 
-- **Alternatif (Supplier)**: Daftar supplier yang menjadi kandidat pilihan.
-- **Kriteria**: Parameter penilaian seperti harga, kualitas, dan waktu pengiriman.
-- **Penilaian**: Nilai untuk masing-masing alternatif terhadap kriteria.
+1. **Admin**
+2. **Kepala Bagian**
 
-```json
-{
-  "alternatif": [
-    { "id": "A1", "nama": "Supplier A" },
-    { "id": "A2", "nama": "Supplier B" },
-    { "id": "A3", "nama": "Supplier C" }
-  ],
-  "kriteria": [
-    { "id": "C1", "nama": "Harga", "bobot": 0.4, "tipe": "cost" },
-    { "id": "C2", "nama": "Kualitas", "bobot": 0.3, "tipe": "benefit" },
-    { "id": "C3", "nama": "Waktu Pengiriman", "bobot": 0.3, "tipe": "benefit" }
-  ],
-  "penilaian": [
-    { "alternatifId": "A1", "nilai": { "C1": 10000, "C2": 8, "C3": 2 } },
-    { "alternatifId": "A2", "nilai": { "C1": 9000, "C2": 6, "C3": 3 } },
-    { "alternatifId": "A3", "nilai": { "C1": 9500, "C2": 7, "C3": 1 } }
-  ]
-}
+## 🧭 Menu & Fitur
+
+### Untuk Admin & Kepala Bagian
+- **Dashboard**: Visualisasi dan informasi ringkas hasil penilaian
+- **Data Alternatif**: Data calon supplier
+- **Data Kriteria**: Kriteria penilaian supplier
+- **Penilaian Kriteria**: Bobot tiap kriteria
+- **Penilaian Alternatif**: Nilai masing-masing supplier berdasarkan kriteria
+- **Data Hasil Keputusan**: Hasil akhir perhitungan metode SAW
+
+### Tambahan untuk Kepala Bagian
+- **Data Pengguna**: Manajemen akun pengguna sistem
+
+## 📦 Instalasi Lokal
+
+```bash
+git clone https://github.com/bagusmaulanahasan/spk-supplier-app.git
+cd spk-supplier-app
+
+# Install dependencies untuk client
+cd client
+npm install
+
+# Jalankan client
+npm run dev
+
+# Install dependencies untuk server
+cd ../server
+npm install
+
+# Jalankan server
+node app
+```
