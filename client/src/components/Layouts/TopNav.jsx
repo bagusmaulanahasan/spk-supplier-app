@@ -6,7 +6,7 @@ const TopNav = () => {
     const [activeLink, setActiveLink] = useState("home");
     
     return (
-        <nav className="fixed top-0 left-0 w-full h-12 bg-white flex items-center justify-between z-10 px-8">
+        <nav className="fixed top-0 left-0 w-full h-16 bg-white flex items-center justify-between z-10 px-8">
             <div className="flex justify-around gap-4">
                 <Link to="/" className={`hover:underline hover:underline-offset-8 hover:text-blue-600 font-semibold ${activeLink === "home" ? "underline underline-offset-8 text-blue-600" : ""}`} onClick={() => setActiveLink("home")}>
                     Home
