@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
+// import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
 import Swal from "sweetalert2";
+
+import {useMemo} from "react";
 
 export default function SupplierCriteriaValuesList() {
     const [data, setData] = useState([]);
@@ -124,55 +126,55 @@ export default function SupplierCriteriaValuesList() {
         saveAs(blob, "supplier_criteria_values.xlsx");
     };
 
-    const columns = [
-        {
-            name: "Supplier",
-            selector: (row) => row.supplierName,
-            sortable: true,
-        },
-        {
-            name: "Criteria",
-            selector: (row) => row.criteriaName,
-            sortable: true,
-        },
-        { name: "Value", selector: (row) => row.value, sortable: true },
-        {
-            name: "Actions",
-            cell: (row) => (
-                <div className="space-x-2">
-                    <button
-                        onClick={() => {
-                            setEditing(row);
-                            setShowForm(true);
-                        }}
-                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        Edit
-                    </button>
-                    <button
-                        onClick={() => handleDelete(row.id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                        Delete
-                    </button>
-                </div>
-            ),
-        },
-    ];
+    // const columns = [
+    //     {
+    //         name: "Supplier",
+    //         selector: (row) => row.supplierName,
+    //         sortable: true,
+    //     },
+    //     {
+    //         name: "Criteria",
+    //         selector: (row) => row.criteriaName,
+    //         sortable: true,
+    //     },
+    //     { name: "Value", selector: (row) => row.value, sortable: true },
+    //     {
+    //         name: "Actions",
+    //         cell: (row) => (
+    //             <div className="space-x-2">
+    //                 <button
+    //                     onClick={() => {
+    //                         setEditing(row);
+    //                         setShowForm(true);
+    //                     }}
+    //                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+    //                 >
+    //                     Edit
+    //                 </button>
+    //                 <button
+    //                     onClick={() => handleDelete(row.id)}
+    //                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+    //                 >
+    //                     Delete
+    //                 </button>
+    //             </div>
+    //         ),
+    //     },
+    // ];
 
-    const customStyles = {
-        rows: {
-            style: { minHeight: "48px" },
-            stripedStyle: { backgroundColor: "#f9fafb" },
-        },
-        headCells: {
-            style: {
-                backgroundColor: "#1f2937",
-                color: "white",
-                fontWeight: "bold",
-            },
-        },
-    };
+    // const customStyles = {
+    //     rows: {
+    //         style: { minHeight: "48px" },
+    //         stripedStyle: { backgroundColor: "#f9fafb" },
+    //     },
+    //     headCells: {
+    //         style: {
+    //             backgroundColor: "#1f2937",
+    //             color: "white",
+    //             fontWeight: "bold",
+    //         },
+    //     },
+    // };
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
@@ -180,7 +182,6 @@ export default function SupplierCriteriaValuesList() {
                 Penilaian Alternatif (Supplier)
             </h2>
             <hr />
-
             <button
                 className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                 onClick={() => {
@@ -190,7 +191,6 @@ export default function SupplierCriteriaValuesList() {
             >
                 Tambah Penilaian Alternatif
             </button>
-
             <SupplierCriteriaValueForm
                 mode={editing ? "edit" : "add"}
                 onSubmit={handleSubmit}
@@ -198,7 +198,6 @@ export default function SupplierCriteriaValuesList() {
                 showForm={showForm}
                 setShowForm={setShowForm}
             />
-
             <div className="flex justify-between items-center mb-4">
                 <input
                     type="text"
@@ -214,15 +213,130 @@ export default function SupplierCriteriaValuesList() {
                     Download Excel
                 </button>
             </div>
+            
+            <table className="w-full table-auto border border-gray-300 text-sm">
+                <thead>
+                    <tr className="bg-gray-800 text-white">
+                        <th className="border p-2 py-3">
+                            Alternatif (Suppliers)
+                        </th>
+                        <th className="border p-2 py-3">Kriteria</th>
+                        <th className="border p-2 py-3">Nilai</th>
+                        <th className="border p-2 py-3 w-[20%]">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {useMemo(() => {
+                        const grouped = {};
 
-            <DataTable
+                        // Kelompokkan berdasarkan supplierName
+                        for (const item of filteredData) {
+                            if (!grouped[item.supplierName]) {
+                                grouped[item.supplierName] = [];
+                            }
+                            grouped[item.supplierName].push(item);
+                        }
+
+                        // Render baris dengan rowSpan untuk supplier
+                        const rows = [];
+                        for (const supplier in grouped) {
+                            const group = grouped[supplier];
+
+                            group.forEach((item, index) => {
+                                rows.push(
+                                    <tr
+                                        key={item.id}
+                                        className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+                                    >
+                                        {index === 0 && (
+                                            <td
+                                                className="border p-2 align-top"
+                                                rowSpan={group.length}
+                                            >
+                                                {supplier}
+                                            </td>
+                                        )}
+                                        <td className="border p-2">
+                                            {item.criteriaName}
+                                        </td>
+                                        <td className="border p-2">
+                                            {item.value}
+                                        </td>
+                                        <td className="border p-2 flex gap-4 justify-center">
+                                            <button
+                                                onClick={() => {
+                                                    setEditing(item);
+                                                    setShowForm(true);
+                                                }}
+                                                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }
+                                                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            });
+                        }
+
+                        return rows;
+                    }, [filteredData])}
+                </tbody>
+            </table>
+            {/* <table className="w-full table-auto border border-gray-300 text-sm">
+                <thead>
+                    <tr className="bg-gray-800 text-white">
+                        <th className="border p-2 py-3">Alternatif (Suppliers)</th>
+                        <th className="border p-2 py-3">Kriteria</th>
+                        <th className="border p-2 py-3">Nilai</th>
+                        <th className="border p-2 py-3 w-[20%]">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredData.map((criteriaSupplier) => (
+                        <tr
+                            key={criteriaSupplier.id}
+                            className="odd:bg-white even:bg-gray-50 hover:bg-gray-200 cursor-pointer"
+                        >
+                            <td className="border p-2">{criteriaSupplier.supplierName}</td>
+                            <td className="border p-2">{criteriaSupplier.criteriaName}</td>
+                            <td className="border p-2">{criteriaSupplier.value}</td>
+                            <td className="border p-2 flex gap-4 justify-center">
+                                <button
+                                    onClick={() => {
+                                        setEditing(criteriaSupplier);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(criteria.id)}
+                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table> */}
+            {/* <DataTable
                 columns={columns}
                 data={filteredData}
                 pagination
                 highlightOnHover
                 striped
                 customStyles={customStyles}
-            />
+            /> */}
         </div>
     );
 }

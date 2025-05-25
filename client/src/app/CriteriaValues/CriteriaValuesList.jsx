@@ -1,10 +1,12 @@
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
+// import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import CriteriaValuesForm from "./CriteriaValuesForm";
+
+import { useMemo } from "react";
 
 export default function CriteriaValuesList() {
     const [criteriaValues, setCriteriaValues] = useState([]);
@@ -112,77 +114,78 @@ export default function CriteriaValuesList() {
         saveAs(blob, "criteria-values.xlsx");
     };
 
-    const columns = [
-        {
-            name: "Nama Kriteria",
-            selector: (row) => {
-                const criteria = criteriaList.find(
-                    (c) => c.id === row.criteria_id
-                );
-                return criteria ? criteria.name : "Unknown";
-            },
-            sortable: true,
-            maxWidth: "22em",
-        },
-        {
-            name: "Nilai",
-            selector: (row) => row.value,
-            sortable: true,
-            cell: (row) => row.value,
-            maxWidth: "10em",
+    // const columns = [
+    //     {
+    //         name: "Nama Kriteria",
+    //         selector: (row) => {
+    //             const criteria = criteriaList.find(
+    //                 (c) => c.id === row.criteria_id
+    //             );
+    //             return criteria ? criteria.name : "Unknown";
+    //         },
+    //         sortable: true,
+    //         maxWidth: "22em",
+    //     },
+    //     {
+    //         name: "Nilai",
+    //         selector: (row) => row.value,
+    //         sortable: true,
+    //         cell: (row) => row.value,
+    //         maxWidth: "10em",
+    //     },
+    //     {
+    //         name: "Deskripsi",
+    //         selector: (row) => row.description,
+    //         sortable: true,
+    //     },
+    //     {
+    //         name: "Actions",
+    //         cell: (row) => (
+    //             <div className="space-x-2">
+    //                 <button
+    //                     onClick={() => {
+    //                         setEditing(row);
+    //                         setShowForm(true);
+    //                     }}
+    //                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+    //                 >
+    //                     Edit
+    //                 </button>
+    //                 <button
+    //                     onClick={() => handleDelete(row.id)}
+    //                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+    //                 >
+    //                     Delete
+    //                 </button>
+    //             </div>
+    //         ),
+    //         maxWidth: "15em",
+    //     },
+    // ];
 
-        },
-        {
-            name: "Deskripsi",
-            selector: (row) => row.description,
-            sortable: true,
-        },
-        {
-            name: "Actions",
-            cell: (row) => (
-                <div className="space-x-2">
-                    <button
-                        onClick={() => {
-                            setEditing(row);
-                            setShowForm(true);
-                        }}
-                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        Edit
-                    </button>
-                    <button
-                        onClick={() => handleDelete(row.id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                        Delete
-                    </button>
-                </div>
-            ),
-            maxWidth: "15em",
-        },
-    ];
+    // const customStyles = {
+    //     rows: {
+    //         stripedStyle: { backgroundColor: "#f9fafb" },
+    //     },
+    //     columns: {
+    //         value: {
+    //             style: {
+    //                 overflow: "hidden",
+    //                 textOverflow: "ellipsis",
+    //                 whiteSpace: "nowrap",
+    //             },
+    //         },
+    //     },
+    //     headCells: {
+    //         style: {
+    //             backgroundColor: "#1f2937",
+    //             color: "white",
+    //             fontWeight: "bold",
+    //         },
+    //     },
+    // };
 
-    const customStyles = {
-        rows: {
-            stripedStyle: { backgroundColor: "#f9fafb" },
-        },
-        columns: {
-            value: {
-                style: {
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                },
-            },
-        },
-        headCells: {
-            style: {
-                backgroundColor: "#1f2937",
-                color: "white",
-                fontWeight: "bold",
-            },
-        },
-    };
+    console.log("criteria list : ", criteriaList);
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
@@ -226,6 +229,138 @@ export default function CriteriaValuesList() {
                 </button>
             </div>
 
+            <table className="w-full table-auto border border-gray-300 text-sm">
+                <thead>
+                    <tr className="bg-gray-800 text-white">
+                        <th className="border p-2 py-3">Nama</th>
+                        <th className="border p-2 py-3">Nilai</th>
+                        <th className="border p-2 py-3">Deskripsi</th>
+                        <th className="border p-2 py-3 w-[20%]">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {useMemo(() => {
+                        const grouped = {};
+
+                        // Kelompokkan data berdasarkan criteria_id
+                        for (const item of filteredData) {
+                            if (!grouped[item.criteria_id]) {
+                                grouped[item.criteria_id] = [];
+                            }
+                            grouped[item.criteria_id].push(item);
+                        }
+
+                        // Ubah menjadi array baris JSX dengan rowSpan
+                        const rows = [];
+                        for (const criteria_id in grouped) {
+                            const group = grouped[criteria_id];
+                            const criteriaName =
+                                criteriaList.find(
+                                    (c) => c.id === parseInt(criteria_id)
+                                )?.name || "Unknown";
+
+                            group.forEach((item, index) => {
+                                rows.push(
+                                    <tr
+                                        key={item.id}
+                                        className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+                                    >
+                                        {index === 0 && (
+                                            <td
+                                                className="border p-2 align-top"
+                                                rowSpan={group.length}
+                                            >
+                                                {criteriaName}
+                                            </td>
+                                        )}
+                                        <td className="border p-2">
+                                            {item.value}
+                                        </td>
+                                        <td className="border p-2">
+                                            {item.description}
+                                        </td>
+                                        <td className="border p-2 flex gap-4 justify-center">
+                                            <button
+                                                onClick={() => {
+                                                    setEditing(item);
+                                                    setShowForm(true);
+                                                }}
+                                                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }
+                                                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            });
+                        }
+
+                        return rows;
+                    }, [filteredData, criteriaList])}
+                </tbody>
+            </table>
+
+            {/* <table className="w-full table-auto border border-gray-300 text-sm">
+                <thead>
+                    <tr className="bg-gray-800 text-white">
+                        <th className="border p-2 py-3">Nama</th>
+                        <th className="border p-2 py-3">Nilai</th>
+                        <th className="border p-2 py-3">Deskripsi</th>
+                        <th className="border p-2 py-3 w-[20%]">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredData.map((criteriaValues) => (
+                        <tr
+                            key={criteriaValues.id}
+                            className="odd:bg-white even:bg-gray-50 hover:bg-gray-200 cursor-pointer"
+                        >
+                            <td className="border p-2">
+                                {
+                                    criteriaList.find(
+                                        (c) =>
+                                            c.id === criteriaValues.criteria_id
+                                    ).name
+                                }
+                            </td>
+                            <td className="border p-2">
+                                {criteriaValues.value}
+                            </td>
+                            <td className="border p-2">
+                                {criteriaValues.description}
+                            </td>
+                            <td className="border p-2 flex gap-4 justify-center">
+                                <button
+                                    onClick={() => {
+                                        setEditing(criteriaValues);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() =>
+                                        handleDelete(criteriaValues.id)
+                                    }
+                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table> */}
+            {/* 
             <DataTable
                 columns={columns}
                 data={filteredData}
@@ -233,9 +368,9 @@ export default function CriteriaValuesList() {
                 highlightOnHover
                 striped
                 customStyles={customStyles}
-                defaultSortField="Nama Kriteria" 
-                defaultSortAsc={false}  
-            />
+                defaultSortField="Nama Kriteria"
+                defaultSortAsc={false}
+            /> */}
         </div>
     );
 }
