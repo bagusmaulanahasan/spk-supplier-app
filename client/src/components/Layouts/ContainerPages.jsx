@@ -47,7 +47,7 @@ const ContainerPage = (props) => {
         <div className="flex min-h-screen">
             <SideNav />
             <div
-                className={`flex flex-col flex-1 px-5 w-96 transition-all duration-300 ease-in-out ${
+                className={`flex flex-col  flex-1 w-96 px-5 transition-all duration-300 ease-in-out ${
                     isOpen ? "ml-64" : "ml-20"
                 }`}
             >

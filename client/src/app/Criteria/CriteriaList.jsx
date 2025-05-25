@@ -1,13 +1,11 @@
+// import DataTable from "react-data-table-component";
+// import { max } from "date-fns";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-// import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import CriteriaForm from "./CriteriaForm";
-// import { max } from "date-fns";
-
-import { useMemo } from "react";
 
 export default function CriteriaList() {
     const [criteria, setCriteria] = useState([]);
@@ -16,6 +14,7 @@ export default function CriteriaList() {
     const [filteredData, setFilteredData] = useState([]);
     const [showForm, setShowForm] = useState(false);
 
+    // Fetch data criteria
     const fetchData = async () => {
         try {
             const res = await API.getCriteria();
@@ -70,11 +69,12 @@ export default function CriteriaList() {
     const handleSearch = (e) => {
         const term = e.target.value.toLowerCase();
         setSearch(term);
-        const filtered = criteria.filter(
-            (item) =>
+        const filtered = criteria.filter((item) => {
+            return (
                 item.name.toLowerCase().includes(term) ||
                 item.type.toLowerCase().includes(term)
-        );
+            );
+        });
         setFilteredData(filtered);
     };
 
@@ -91,47 +91,6 @@ export default function CriteriaList() {
         });
         saveAs(blob, "criteria.xlsx");
     };
-
-    // const columns = [
-    //     { name: "Nama", selector: (row) => row.name, sortable: true },
-    //     { name: "Type", selector: (row) => row.type, sortable: true },
-    //     { name: "Weight", selector: (row) => row.weight, sortable: true },
-    //     {
-    //         name: "Actions",
-    //         cell: (row) => (
-    //             <div className="space-x-2">
-    //                 <button
-    //                     onClick={() => {
-    //                         setEditing(row);
-    //                         setShowForm(true);
-    //                     }}
-    //                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-    //                 >
-    //                     Edit
-    //                 </button>
-    //                 <button
-    //                     onClick={() => handleDelete(row.id)}
-    //                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-    //                 >
-    //                     Delete
-    //                 </button>
-    //             </div>
-    //         ),
-    //     },
-    // ];
-
-    // const customStyles = {
-    //     rows: {
-    //         stripedStyle: { backgroundColor: "#f9fafb" },
-    //     },
-    //     headCells: {
-    //         style: {
-    //             backgroundColor: "#1f2937",
-    //             color: "white",
-    //             fontWeight: "bold",
-    //         },
-    //     },
-    // };
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
@@ -177,79 +136,91 @@ export default function CriteriaList() {
             <table className="w-full table-auto border border-gray-300 text-sm">
                 <thead>
                     <tr className="bg-gray-800 text-white">
-                        <th className="border p-2 py-3">Tipe</th>
                         <th className="border p-2 py-3">Nama</th>
+                        <th className="border p-2 py-3">Kategori</th>
                         <th className="border p-2 py-3">Bobot</th>
                         <th className="border p-2 py-3 w-[20%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {useMemo(() => {
-                        const grouped = {};
-
-                        // Kelompokkan berdasarkan type
-                        for (const item of filteredData) {
-                            if (!grouped[item.type]) {
-                                grouped[item.type] = [];
-                            }
-                            grouped[item.type].push(item);
-                        }
-
-                        // Buat baris dengan rowSpan
-                        const rows = [];
-                        for (const type in grouped) {
-                            const group = grouped[type];
-
-                            group.forEach((item, index) => {
-                                rows.push(
-                                    <tr
-                                        key={item.id}
-                                        className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
-                                    >
-                                        {index === 0 && (
-                                            <td
-                                                className="border p-2 align-top"
-                                                rowSpan={group.length}
-                                            >
-                                                {type}
-                                            </td>
-                                        )}
-                                        <td className="border p-2">
-                                            {item.name}
-                                        </td>
-                                        <td className="border p-2">
-                                            {item.weight}
-                                        </td>
-                                        <td className="border p-2 flex gap-4 justify-center">
-                                            <button
-                                                onClick={() => {
-                                                    setEditing(item);
-                                                    setShowForm(true);
-                                                }}
-                                                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(item.id)
-                                                }
-                                                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            });
-                        }
-
-                        return rows;
-                    }, [filteredData])}
+                    {filteredData.map((item) => (
+                        <tr
+                            key={item.id}
+                            className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+                        >
+                            <td className="border p-2">{item.name}</td>
+                            <td className="border p-2">{item.type}</td>
+                            <td className="border p-2">{item.weight}</td>
+                            <td className="border p-2 flex gap-4 justify-center">
+                                <button
+                                    onClick={() => {
+                                        setEditing(item);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
+        </div>
+    );
+}
 
-            {/* <table className="w-full table-auto border border-gray-300 text-sm">
+// const columns = [
+//     { name: "Nama", selector: (row) => row.name, sortable: true },
+//     { name: "Type", selector: (row) => row.type, sortable: true },
+//     { name: "Weight", selector: (row) => row.weight, sortable: true },
+//     {
+//         name: "Actions",
+//         cell: (row) => (
+//             <div className="space-x-2">
+//                 <button
+//                     onClick={() => {
+//                         setEditing(row);
+//                         setShowForm(true);
+//                     }}
+//                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+//                 >
+//                     Edit
+//                 </button>
+//                 <button
+//                     onClick={() => handleDelete(row.id)}
+//                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+//                 >
+//                     Delete
+//                 </button>
+//             </div>
+//         ),
+//     },
+// ];
+
+// const customStyles = {
+//     rows: {
+//         stripedStyle: { backgroundColor: "#f9fafb" },
+//     },
+//     headCells: {
+//         style: {
+//             backgroundColor: "#1f2937",
+//             color: "white",
+//             fontWeight: "bold",
+//         },
+//     },
+// };
+
+// ........
+
+{
+    /* <table className="w-full table-auto border border-gray-300 text-sm">
                 <thead>
                     <tr className="bg-gray-800 text-white">
                         <th className="border p-2 py-3">Tipe</th>
@@ -287,16 +258,16 @@ export default function CriteriaList() {
                         </tr>
                     ))}
                 </tbody>
-            </table> */}
+            </table> */
+}
 
-            {/* <DataTable
+{
+    /* <DataTable
                 columns={columns}
                 data={filteredData}
                 pagination
                 highlightOnHover
                 striped
                 customStyles={customStyles}
-            /> */}
-        </div>
-    );
+            /> */
 }

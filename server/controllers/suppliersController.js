@@ -19,10 +19,10 @@ exports.getById = (req, res) => {
 };
 
 exports.create = (req, res) => {
-    const { initial, name } = req.body;
+    const { material_supply_type_id, initial, name } = req.body;
     db.query(
-        "INSERT INTO suppliers (initial, name) VALUES (?, ?)",
-        [initial, name],
+        "INSERT INTO suppliers (material_supply_type_id, initial, name) VALUES (?, ?, ?)",
+        [material_supply_type_id, initial, name],
         (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ id: result.insertId, initial, name });
@@ -31,10 +31,10 @@ exports.create = (req, res) => {
 };
 
 exports.update = (req, res) => {
-    const { initial, name } = req.body;
+    const { material_supply_type_id, initial, name } = req.body;
     db.query(
-        "UPDATE suppliers SET initial = ?, name = ? WHERE id = ?",
-        [initial, name, req.params.id],
+        "UPDATE suppliers SET material_supply_type_id = ?, initial = ?, name = ? WHERE id = ?",
+        [material_supply_type_id, initial, name, req.params.id],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: "Result updated successfully" });

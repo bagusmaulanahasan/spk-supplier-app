@@ -19,10 +19,10 @@ exports.getById = (req, res) => {
 };
 
 exports.create = (req, res) => {
-    const { name, description, type, weight } = req.body;
+    const { material_supply_type_id, name, description, type, weight } = req.body;
     db.query(
-        "INSERT INTO criteria (name, description, type, weight) VALUES (?, ?, ?, ?)",
-        [name, description, type, weight],
+        "INSERT INTO criteria (material_supply_type_id, name, description, type, weight) VALUES (?, ?, ?, ?, ?)",
+        [material_supply_type_id, name, description, type, weight],
         (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ id: result.insertId, name, description, type, weight });
@@ -31,10 +31,10 @@ exports.create = (req, res) => {
 };
 
 exports.update = (req, res) => {
-    const { name, description, type, weight } = req.body;
+    const { material_supply_type_id, name, description, type, weight } = req.body;
     db.query(
-        "UPDATE criteria SET name = ?, description = ?, type = ?, weight = ? WHERE id = ?",
-        [name, description, type, weight, req.params.id],
+        "UPDATE criteria SET material_supply_type_id = ?, name = ?, description = ?, type = ?, weight = ? WHERE id = ?",
+        [material_supply_type_id, name, description, type, weight, req.params.id],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: "Criteria updated successfully" });

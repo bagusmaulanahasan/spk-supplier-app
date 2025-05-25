@@ -1,22 +1,21 @@
-import { useEffect, useState } from "react";
-// import DataTable from "react-data-table-component";
+import { useEffect, useState, useMemo } from "react";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
 import Swal from "sweetalert2";
 
-import {useMemo} from "react";
-
 export default function SupplierCriteriaValuesList() {
     const [data, setData] = useState([]);
     const [suppliers, setSuppliers] = useState({});
     const [criteria, setCriteria] = useState({});
+    const [materialTypes, setMaterialTypes] = useState([]);
     const [editing, setEditing] = useState(null);
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const [showForm, setShowForm] = useState(false);
 
+    // Fetch nilai supplier criteria, supplier, dan criteria secara bersamaan
     const fetchData = async () => {
         try {
             const [valuesRes, supplierRes, criteriaRes] = await Promise.all([
@@ -25,11 +24,13 @@ export default function SupplierCriteriaValuesList() {
                 API.getCriteria(),
             ]);
 
+            // Buat mapping untuk supplier dan criteria
             const supplierMap = {};
             supplierRes.data.forEach((s) => (supplierMap[s.id] = s.name));
             const criteriaMap = {};
             criteriaRes.data.forEach((c) => (criteriaMap[c.id] = c.name));
 
+            // Enrich data dengan properti supplierName dan criteriaName
             const enrichedData = valuesRes.data.map((item) => ({
                 ...item,
                 supplierName: supplierMap[item.supplier_id] || "Unknown",
@@ -48,6 +49,23 @@ export default function SupplierCriteriaValuesList() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    // Fetch data material supply types
+    useEffect(() => {
+        API.getMaterialTypes()
+            .then((res) => setMaterialTypes(res.data))
+            .catch((err) =>
+                console.error("Error fetching material types:", err)
+            );
+    }, []);
+
+    // Mapping dari material_supply_type_id ke nama material
+    const materialMap = useMemo(() => {
+        return materialTypes.reduce((acc, mat) => {
+            acc[mat.id] = mat.type_name;
+            return acc;
+        }, {});
+    }, [materialTypes]);
 
     const handleSubmit = async (form) => {
         try {
@@ -126,56 +144,6 @@ export default function SupplierCriteriaValuesList() {
         saveAs(blob, "supplier_criteria_values.xlsx");
     };
 
-    // const columns = [
-    //     {
-    //         name: "Supplier",
-    //         selector: (row) => row.supplierName,
-    //         sortable: true,
-    //     },
-    //     {
-    //         name: "Criteria",
-    //         selector: (row) => row.criteriaName,
-    //         sortable: true,
-    //     },
-    //     { name: "Value", selector: (row) => row.value, sortable: true },
-    //     {
-    //         name: "Actions",
-    //         cell: (row) => (
-    //             <div className="space-x-2">
-    //                 <button
-    //                     onClick={() => {
-    //                         setEditing(row);
-    //                         setShowForm(true);
-    //                     }}
-    //                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-    //                 >
-    //                     Edit
-    //                 </button>
-    //                 <button
-    //                     onClick={() => handleDelete(row.id)}
-    //                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-    //                 >
-    //                     Delete
-    //                 </button>
-    //             </div>
-    //         ),
-    //     },
-    // ];
-
-    // const customStyles = {
-    //     rows: {
-    //         style: { minHeight: "48px" },
-    //         stripedStyle: { backgroundColor: "#f9fafb" },
-    //     },
-    //     headCells: {
-    //         style: {
-    //             backgroundColor: "#1f2937",
-    //             color: "white",
-    //             fontWeight: "bold",
-    //         },
-    //     },
-    // };
-
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
             <h2 className="text-2xl font-semibold text-gray-700">
@@ -213,10 +181,10 @@ export default function SupplierCriteriaValuesList() {
                     Download Excel
                 </button>
             </div>
-            
             <table className="w-full table-auto border border-gray-300 text-sm">
                 <thead>
                     <tr className="bg-gray-800 text-white">
+                        <th className="border p-2 py-3">Material Suplai</th>
                         <th className="border p-2 py-3">
                             Alternatif (Suppliers)
                         </th>
@@ -227,116 +195,104 @@ export default function SupplierCriteriaValuesList() {
                 </thead>
                 <tbody>
                     {useMemo(() => {
-                        const grouped = {};
-
-                        // Kelompokkan berdasarkan supplierName
-                        for (const item of filteredData) {
-                            if (!grouped[item.supplierName]) {
-                                grouped[item.supplierName] = [];
-                            }
-                            grouped[item.supplierName].push(item);
-                        }
-
-                        // Render baris dengan rowSpan untuk supplier
                         const rows = [];
-                        for (const supplier in grouped) {
-                            const group = grouped[supplier];
-
-                            group.forEach((item, index) => {
-                                rows.push(
-                                    <tr
-                                        key={item.id}
-                                        className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
-                                    >
-                                        {index === 0 && (
-                                            <td
-                                                className="border p-2 align-top"
-                                                rowSpan={group.length}
-                                            >
-                                                {supplier}
-                                            </td>
-                                        )}
-                                        <td className="border p-2">
-                                            {item.criteriaName}
-                                        </td>
-                                        <td className="border p-2">
-                                            {item.value}
-                                        </td>
-                                        <td className="border p-2 flex gap-4 justify-center">
-                                            <button
-                                                onClick={() => {
-                                                    setEditing(item);
-                                                    setShowForm(true);
-                                                }}
-                                                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(item.id)
-                                                }
-                                                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
+                        // Kelompokkan data berdasarkan material_supply_type_id
+                        const groupedByMaterial = {};
+                        filteredData.forEach((item) => {
+                            const key = item.material_supply_type_id;
+                            if (!groupedByMaterial[key])
+                                groupedByMaterial[key] = [];
+                            groupedByMaterial[key].push(item);
+                        });
+                        // Iterasi tiap kelompok material
+                        Object.keys(groupedByMaterial).forEach((materialId) => {
+                            const materialGroup = groupedByMaterial[materialId];
+                            const totalRowsForMaterial = materialGroup.length;
+                            // Kelompokkan lagi berdasarkan alternatif (supplierName) di dalam materialGroup
+                            const groupedBySupplier = {};
+                            materialGroup.forEach((item) => {
+                                const supplierKey = item.supplierName;
+                                if (!groupedBySupplier[supplierKey])
+                                    groupedBySupplier[supplierKey] = [];
+                                groupedBySupplier[supplierKey].push(item);
                             });
-                        }
-
+                            // Ubah groupedBySupplier ke array untuk mendapatkan index supplierGroup
+                            const supplierGroupsArr =
+                                Object.entries(groupedBySupplier);
+                            supplierGroupsArr.forEach(
+                                (
+                                    [supplierName, itemsForSupplier],
+                                    supplierIndex
+                                ) => {
+                                    itemsForSupplier.forEach((item, idx) => {
+                                        rows.push(
+                                            <tr
+                                                key={item.id}
+                                                className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+                                            >
+                                                {/* Sel Material Suplai hanya tampil di baris pertama dari kelompok material
+                          (pada kelompok supplier pertama, baris pertama) */}
+                                                {supplierIndex === 0 &&
+                                                    idx === 0 && (
+                                                        <td
+                                                            className="border p-2"
+                                                            rowSpan={
+                                                                totalRowsForMaterial
+                                                            }
+                                                        >
+                                                            {materialMap[
+                                                                materialId
+                                                            ] || materialId}
+                                                        </td>
+                                                    )}
+                                                {/* Sel Alternatif (Suppliers) tampil di baris pertama masing-masing kelompok supplier */}
+                                                {idx === 0 && (
+                                                    <td
+                                                        className="border p-2"
+                                                        rowSpan={
+                                                            itemsForSupplier.length
+                                                        }
+                                                    >
+                                                        {supplierName}
+                                                    </td>
+                                                )}
+                                                <td className="border p-2">
+                                                    {item.criteriaName}
+                                                </td>
+                                                <td className="border p-2">
+                                                    {item.value}
+                                                </td>
+                                                <td className="border p-2 flex gap-4 justify-center">
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditing(item);
+                                                            setShowForm(true);
+                                                        }}
+                                                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                item.id
+                                                            )
+                                                        }
+                                                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    });
+                                }
+                            );
+                        });
                         return rows;
-                    }, [filteredData])}
+                    }, [filteredData, materialMap])}
                 </tbody>
             </table>
-            {/* <table className="w-full table-auto border border-gray-300 text-sm">
-                <thead>
-                    <tr className="bg-gray-800 text-white">
-                        <th className="border p-2 py-3">Alternatif (Suppliers)</th>
-                        <th className="border p-2 py-3">Kriteria</th>
-                        <th className="border p-2 py-3">Nilai</th>
-                        <th className="border p-2 py-3 w-[20%]">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredData.map((criteriaSupplier) => (
-                        <tr
-                            key={criteriaSupplier.id}
-                            className="odd:bg-white even:bg-gray-50 hover:bg-gray-200 cursor-pointer"
-                        >
-                            <td className="border p-2">{criteriaSupplier.supplierName}</td>
-                            <td className="border p-2">{criteriaSupplier.criteriaName}</td>
-                            <td className="border p-2">{criteriaSupplier.value}</td>
-                            <td className="border p-2 flex gap-4 justify-center">
-                                <button
-                                    onClick={() => {
-                                        setEditing(criteriaSupplier);
-                                        setShowForm(true);
-                                    }}
-                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(criteria.id)}
-                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table> */}
-            {/* <DataTable
-                columns={columns}
-                data={filteredData}
-                pagination
-                highlightOnHover
-                striped
-                customStyles={customStyles}
-            /> */}
         </div>
     );
 }

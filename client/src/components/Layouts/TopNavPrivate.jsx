@@ -9,21 +9,21 @@ const TopNavPrivate = () => {
     const navigate = useNavigate();
 
     return (
-        <nav className="h-12 w-full justify-between px-12 flex my-4 relative">
+        <nav className="h-20 w-full items-center justify-between px-16 flex sticky top-0 bg-white">
             <img
                 src={LogoMultindoJayaMandiri}
                 alt="Logo Multindo Jaya Mandiri"
-                className="h-12"
+                className="h-16"
             />
             {/* Wrap user section in group */}
             <div className="relative group flex items-center gap-4 cursor-pointer">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center gap-4">
                     <FontAwesomeIcon
                         icon={faUser}
-                        size="l"
-                        className="text-slate-600"
+                        size=""
+                        className="text-slate-600 border-2 p-2 rounded-full"
                     />
-                    <p className="text-slate-600">{username}</p>
+                    <p className="text-slate-600 font-semibold text-xl">{username}</p>
                 </div>
 
                 {/* Dropdown on hover */}

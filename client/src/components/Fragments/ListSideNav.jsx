@@ -22,6 +22,11 @@ const listSideNav = [
     },
     ...(localStorage.getItem("role") === "kepala bagian" ? [menuKepalaBagian] : []),
     {
+        title: "Data Material Suplai",
+        icon: <FileBarChart2 size={18} />,
+        path: "/material-suplai",
+    },
+    {
         title: "Data Alternatif",
         icon: <ListOrdered size={18} />,
         path: "/alternatif",

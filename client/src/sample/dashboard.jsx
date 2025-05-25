@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import { Card, CardContent } from "@/components/ui/card"; // pakai shadcn/ui
 import { Card, CardContent } from "../components/ui/card"; // pakai shadcn/ui
 import { BarChart3, Users2, FileText, Trophy } from "lucide-react";
 import ContainerPage from "@/components/Layouts/ContainerPages";
@@ -11,7 +10,6 @@ import {
     getSupplierCriteriaValues,
 } from "../api/api";
 import BarChart from "@/components/BarChart";
-// import SupplierList from "@/components/Suppliers/SupplierList";
 
 const Dashboard = () => {
 

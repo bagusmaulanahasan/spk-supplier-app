@@ -10,13 +10,13 @@ const SideNav = (props) => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex">
+        <div className="flex relative overflow-hidden">
             <div
-                className={`bg-gray-800 text-white h-screen p-5 pt-8 duration-300 ${
+                className={`bg-gray-800 text-white h-screen py-2 px-5 duration-300 ${
                     isOpen ? "w-64" : "w-20"
                 } fixed`}
             >
-                <div className="flex justify-between items-center">
+                <div className="flex h-16 justify-between items-center">
                     <h1
                         className={`text-xl font-bold duration-300 w-36 text-center ${
                             !isOpen && "scale-0"
@@ -26,9 +26,9 @@ const SideNav = (props) => {
                     </h1>
                     <button
                         onClick={toggleSidebar}
-                        className="mb-4 p-2 px-4 bg-gray-700 rounded hover:bg-gray-600 transition cursor-pointer"
+                        className={`p-2 bg-gray-700 hover:bg-gray-600 cursor-pointer border-slate-100 transition-all duration-300 border-4 rounded-full absolute ${isOpen ? "w-14 left-56": "left-16"}`}
                     >
-                        {isOpen ? "<" : ">"}
+                        {isOpen ? "X" : "I|I"}
                     </button>
                 </div>
                 <hr />
@@ -62,7 +62,7 @@ const SideNav = (props) => {
                         </li>
                     ))}
                 </ul>
-                <button
+                {/* <button
                     onClick={() => {
                         localStorage.clear();
                         navigate("/login");
@@ -87,7 +87,7 @@ const SideNav = (props) => {
                     >
                         logout
                     </span>
-                </button>
+                </button> */}
             </div>
         </div>
     );

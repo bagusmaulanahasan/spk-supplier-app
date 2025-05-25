@@ -55,7 +55,7 @@ exports.getById = (req, res) => {
 // };
 
 exports.create = (req, res) => {
-    const { supplier_id, values } = req.body;
+    const {material_supply_type_id, supplier_id, values } = req.body;
 
     if (!supplier_id || !Array.isArray(values)) {
         return res.status(400).json({ error: "Invalid input" });
@@ -65,8 +65,9 @@ exports.create = (req, res) => {
         return res.status(400).json({ error: "No values provided" });
     }
 
-    const sql = "INSERT INTO supplier_criteria_values (supplier_id, criteria_id, value) VALUES ?";
+    const sql = "INSERT INTO supplier_criteria_values (material_supply_type_id, supplier_id, criteria_id, value) VALUES ?";
     const valuesArray = values.map(({ criteria_id, value }) => [
+        material_supply_type_id,
         supplier_id,
         parseInt(criteria_id),
         value,
@@ -83,10 +84,10 @@ exports.create = (req, res) => {
 
 
 exports.update = (req, res) => {
-    const { supplier_id, criteria_id, value } = req.body;
+    const {material_supply_type_id, supplier_id, criteria_id, value } = req.body;
     db.query(
-        "UPDATE supplier_criteria_values SET supplier_id = ?, criteria_id = ?, value = ? WHERE id = ?",
-        [supplier_id, criteria_id, value, req.params.id],
+        "UPDATE supplier_criteria_values SET material_supply_type_id = ?, supplier_id = ?, criteria_id = ?, value = ? WHERE id = ?",
+        [material_supply_type_id, supplier_id, criteria_id, value, req.params.id],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: "Result updated successfully" });
