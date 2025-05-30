@@ -4,6 +4,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import MaterialSupplyForm from "./MaterialSupplyForm";
 import { useEffect, useState } from "react";
+import ConfirmDeleteAlert from "@/components/Alerts/ConfirmDelete";
+import SubmitAlert from "@/components/Alerts/Submit";
 
 export default function MaterialTypeList() {
     const [materialTypes, setMaterialTypes] = useState([]);
@@ -33,34 +35,17 @@ export default function MaterialTypeList() {
             } else {
                 await API.createMaterialTypes(form);
             }
+            SubmitAlert("success", "Data berhasil disimpan");
             setEditing(null);
             fetchData();
         } catch (err) {
             console.error("Submit error:", err);
+            SubmitAlert("error", "Data gagal disimpan");
         }
     };
 
     const handleDelete = async (id) => {
-        Swal.fire({
-            title: "Apakah anda yakin?",
-            text: "Data akan dihapus secara permanen!",
-            icon: "warning",
-            showCancelButton: true,
-            reverseButtons: true,
-            cancelButtonColor: "#6b7280",
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Ya, hapus!",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await API.deleteMaterialTypes(id);
-                fetchData();
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Data berhasil dihapus.",
-                    icon: "success",
-                });
-            }
-        });
+        ConfirmDeleteAlert(() => API.deleteMaterialTypes(id), fetchData);
     };
 
     const handleSearch = (e) => {
@@ -103,7 +88,7 @@ export default function MaterialTypeList() {
                     setShowForm(true);
                 }}
             >
-                Tambah Material Suplai
+                Tambah Jenis Material Suplai
             </button>
 
             <MaterialSupplyForm
@@ -133,7 +118,7 @@ export default function MaterialTypeList() {
             <table className="w-full table-auto border border-gray-300 text-sm">
                 <thead>
                     <tr className="bg-gray-800 text-white">
-                        <th className="border p-2 py-3">Tipe Material</th>
+                        <th className="border p-2 py-3 w-[30%]">Jenis Material</th>
                         <th className="border p-2 py-3">Deskripsi</th>
                         <th className="border p-2 py-3 w-[20%]">Aksi</th>
                     </tr>

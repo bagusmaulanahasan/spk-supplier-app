@@ -18,29 +18,66 @@ exports.getById = (req, res) => {
     );
 };
 
+// exports.create = (req, res) => {
+//     const { criteria_id, value, description } = req.body;
+//     db.query(
+//         "INSERT INTO criteria_values ( criteria_id, value, description) VALUES (?, ?, ?)",
+//         [ criteria_id, value, description],
+//         (err, result) => {
+//             if (err) return res.status(500).json({ error: err.message });
+//             res.json({ id: result.insertId, criteria_id, value, description });
+//         }
+//     );
+// };
+
+// exports.update = (req, res) => {
+//     const { criteria_id, value, description } = req.body;
+//     db.query(
+//         "UPDATE criteria_values SET \ criteria_id = ?, value = ?, description = ? WHERE id = ?",
+//         [ criteria_id, value, description, req.params.id],
+//         (err) => {
+//             if (err) return res.status(500).json({ error: err.message });
+//             res.json({ message: "Criteria value updated successfully" });
+//         }
+//     );
+// };
+
+// Tambah satu atau banyak data
 exports.create = (req, res) => {
-    const {material_supply_type_id, criteria_id, value, description } = req.body;
+    const data = Array.isArray(req.body) ? req.body : [req.body];
+
+    const values = data.map(({ criteria_id, value, description }) => [
+        criteria_id,
+        value,
+        description,
+    ]);
+
     db.query(
-        "INSERT INTO criteria_values (material_supply_type_id, criteria_id, value, description) VALUES (?, ?, ?, ?)",
-        [material_supply_type_id, criteria_id, value, description],
+        "INSERT INTO criteria_values (criteria_id, value, description) VALUES ?",
+        [values],
         (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.json({ id: result.insertId, criteria_id, value, description });
+            res.json({
+                message: "Criteria values added successfully",
+                insertedCount: result.affectedRows,
+            });
         }
     );
 };
 
+// Edit satu data
 exports.update = (req, res) => {
-    const {material_supply_type_id, criteria_id, value, description } = req.body;
+    const { criteria_id, value, description } = req.body;
     db.query(
-        "UPDATE criteria_values SET material_supply_type_id = ?, criteria_id = ?, value = ?, description = ? WHERE id = ?",
-        [material_supply_type_id, criteria_id, value, description, req.params.id],
+        "UPDATE criteria_values SET criteria_id = ?, value = ?, description = ? WHERE id = ?",
+        [criteria_id, value, description, req.params.id],
         (err) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: "Criteria value updated successfully" });
         }
     );
 };
+
 
 exports.delete = (req, res) => {
     db.query(

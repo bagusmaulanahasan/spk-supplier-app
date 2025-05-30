@@ -103,3 +103,4 @@ const BarChartResponsive = () => {
 };
 
 export default BarChartResponsive;
+

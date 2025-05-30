@@ -24,7 +24,7 @@ const listSideNav = [
     {
         title: "Data Material Suplai",
         icon: <FileBarChart2 size={18} />,
-        path: "/material-suplai",
+        path: "/material-supply",
     },
     {
         title: "Data Alternatif",

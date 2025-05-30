@@ -26,7 +26,7 @@ const SideNav = (props) => {
                     </h1>
                     <button
                         onClick={toggleSidebar}
-                        className={`p-2 bg-gray-700 hover:bg-gray-600 cursor-pointer border-slate-100 transition-all duration-300 border-4 rounded-full absolute ${isOpen ? "w-14 left-56": "left-16"}`}
+                        className={`p-2 bg-gray-700 hover:bg-gray-600 cursor-pointer border-slate-100 transition-all duration-300 border-4 rounded-full absolute ${isOpen ? "w-14 left-56": "left-16 w-10"}`}
                     >
                         {isOpen ? "X" : "I|I"}
                     </button>

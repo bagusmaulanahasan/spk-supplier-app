@@ -22,7 +22,7 @@
 //         const labels = groupResults.map((r) => {
 //             // Cari supplier berdasarkan supplier_id
 //             const sup = suppliers.find((s) => s.id === r.supplier_id);
-//             return sup ? sup.initial : `Supplier ${r.supplier_id}`;
+//             return sup ? sup.name : `Supplier ${r.supplier_id}`;
 //         });
 
 //         const backgroundColors = [
@@ -195,7 +195,7 @@
 //                                                 </td>
 //                                                 <td className="border p-2">
 //                                                     {sup
-//                                                         ? sup.initial
+//                                                         ? sup.name
 //                                                         : `Supplier ${res.supplier_id}`}
 //                                                 </td>
 //                                                 <td className="border p-2">
@@ -237,7 +237,7 @@ const MaterialBarChart = ({ materialName, groupResults, suppliers }) => {
         const chartValues = groupResults.map((r) => parseFloat(r.score));
         const labels = groupResults.map((r) => {
             const sup = suppliers.find((s) => s.id === r.supplier_id);
-            return sup ? sup.initial : `Supplier ${r.supplier_id}`;
+            return sup ? sup.name : `Supplier ${r.supplier_id}`;
         });
 
         const backgroundColors = [
@@ -410,7 +410,7 @@ const BarChartResponsive = () => {
                                                 </td>
                                                 <td className="border p-2">
                                                     {sup
-                                                        ? sup.initial
+                                                        ? sup.name
                                                         : `Supplier ${res.supplier_id}`}
                                                 </td>
                                                 <td className="border p-2">

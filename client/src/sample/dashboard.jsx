@@ -153,13 +153,6 @@ const Dashboard = () => {
                                         {results.length > 0
                                             ? results[0].supplier.name
                                             : ""}
-                                    </p>{" "}
-                                    <p className="text-slate-600">
-                                        (
-                                        {results.length > 0
-                                            ? results[0].supplier.initial
-                                            : ""}
-                                        )
                                     </p>
                                 </div>
                                 <Trophy className="text-purple-500 w-8 h-8" />

@@ -5,6 +5,8 @@ import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import CriteriaValuesForm from "./CriteriaValuesForm";
+import SubmitAlert from "@/components/Alerts/Submit";
+import ConfirmDeleteAlert from "@/components/Alerts/ConfirmDelete";
 
 export default function CriteriaValuesList() {
     const [criteriaValues, setCriteriaValues] = useState([]);
@@ -45,34 +47,17 @@ export default function CriteriaValuesList() {
             } else {
                 await API.createCriteriaValue(form);
             }
+            SubmitAlert("success", "Data berhasil disimpan");
             setEditing(null);
             fetchData();
         } catch (err) {
+            SubmitAlert("error", "Data gagal disimpan");
             console.error("Submit error:", err);
         }
     };
 
     const handleDelete = async (id) => {
-        Swal.fire({
-            title: "Apakah anda yakin?",
-            text: "Data akan dihapus secara permanen!",
-            icon: "warning",
-            showCancelButton: true,
-            reverseButtons: true,
-            cancelButtonColor: "#6b7280",
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Ya, hapus!",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await API.deleteCriteriaValue(id);
-                fetchData();
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Data berhasil dihapus.",
-                    icon: "success",
-                });
-            }
-        });
+        ConfirmDeleteAlert(() => API.deleteCriteriaValue(id), fetchData);
     };
 
     const handleSearch = (e) => {
@@ -159,7 +144,7 @@ export default function CriteriaValuesList() {
                     <tr className="bg-gray-800 text-white">
                         <th className="border p-2 py-3">Nama</th>
                         <th className="border p-2 py-3">Nilai</th>
-                        <th className="border p-2 py-3">Deskripsi</th>
+                        <th className="border p-2 py-3">Deskripsi Penilaian</th>
                         <th className="border p-2 py-3 w-[20%]">Aksi</th>
                     </tr>
                 </thead>
@@ -192,7 +177,11 @@ export default function CriteriaValuesList() {
                                                     (c) =>
                                                         c.id ===
                                                         parseInt(criteriaId)
-                                                )?.name || "N/A"}
+                                                )?.name || "N/A"} -                                                 {criteriaList.find(
+                                                    (c) =>
+                                                        c.id ===
+                                                        parseInt(criteriaId)
+                                                )?.description || "N/A"}
                                             </td>
                                         )}
                                         <td className="border p-2">

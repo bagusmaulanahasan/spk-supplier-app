@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 // import { Card, CardContent } from "@/components/ui/card"; // pakai shadcn/ui
 import { Card, CardContent } from "../components/ui/card"; // pakai shadcn/ui
-import { BarChart3, Users2, FileText, Trophy } from "lucide-react";
+import { Package, Users2, FileText, Trophy } from "lucide-react";
 import ContainerPage from "@/components/Layouts/ContainerPages";
 import { Link } from "react-router-dom";
 
@@ -9,6 +9,7 @@ import {
     getCriteria,
     getSuppliers,
     getSupplierCriteriaValues,
+    getMaterialTypes,
 } from "../api/api";
 import BarChart from "@/components/BarChart";
 // import SupplierList from "@/components/Suppliers/SupplierList";
@@ -18,18 +19,21 @@ const Dashboard = () => {
     const [criteria, setCriteria] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [supplierCriteriaValues, setSupplierCriteriaValues] = useState([]);
+    const [materialTypes, setMaterialTypes] = useState([])
     const [results, setResults] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const [criteriaRes, suppliersRes, scvRes] = await Promise.all([
+            const [criteriaRes, suppliersRes, scvRes, materialTypesRes] = await Promise.all([
                 getCriteria(),
                 getSuppliers(),
                 getSupplierCriteriaValues(),
+                getMaterialTypes(),
             ]);
             setCriteria(criteriaRes.data);
             setSuppliers(suppliersRes.data);
             setSupplierCriteriaValues(scvRes.data);
+            setMaterialTypes(materialTypesRes.data)
         };
         fetchData();
     }, []);
@@ -85,6 +89,8 @@ const Dashboard = () => {
         setResults(scored);
     };
 
+    console.log('material-type : ',materialTypes)
+
     return (
         <ContainerPage>
             <div className="p-8">
@@ -97,7 +103,7 @@ const Dashboard = () => {
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-600">
-                                        Total Alternatif
+                                        Total Supplier (Alternatif)
                                     </h2>
                                     <p className="text-2xl font-bold">
                                         {
@@ -128,18 +134,18 @@ const Dashboard = () => {
                         </Card>
                     </Link>
 
-                    <Link to="/penilaian-alternatif">
+                    <Link to="/material-supply">
                         <Card className="bg-yellow-100 shadow-md h-full">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-600">
-                                        Total Penilaian
+                                        Total Material Supply
                                     </h2>
                                     <p className="text-2xl font-bold">
-                                        {supplierCriteriaValues.length}
+                                        {materialTypes.length}
                                     </p>
                                 </div>
-                                <BarChart3 className="text-yellow-500 w-8 h-8" />
+                                <Package className="text-yellow-500 w-8 h-8" />
                             </CardContent>
                         </Card>
                     </Link>
@@ -149,19 +155,12 @@ const Dashboard = () => {
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
                                     <h2 className="text-sm text-gray-600">
-                                        Hasil Terbaik
+                                        Supplier Terbaik dari berbagai Material
                                     </h2>
                                     <p className="text-xl font-bold">
                                         {results.length > 0
                                             ? results[0].supplier.name
                                             : ""}
-                                    </p>{" "}
-                                    <p className="text-slate-600">
-                                        (
-                                        {results.length > 0
-                                            ? results[0].supplier.initial
-                                            : ""}
-                                        )
                                     </p>
                                 </div>
                                 <Trophy className="text-purple-500 w-8 h-8" />

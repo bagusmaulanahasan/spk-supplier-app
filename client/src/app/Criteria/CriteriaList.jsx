@@ -6,6 +6,8 @@ import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import CriteriaForm from "./CriteriaForm";
+import ConfirmDeleteAlert from "@/components/Alerts/ConfirmDelete";
+import SubmitAlert from "@/components/Alerts/Submit";
 
 export default function CriteriaList() {
     const [criteria, setCriteria] = useState([]);
@@ -36,34 +38,37 @@ export default function CriteriaList() {
             } else {
                 await API.createCriteria(form);
             }
+            SubmitAlert("success", "Data berhasil disimpan");
             setEditing(null);
             fetchData();
         } catch (err) {
             console.error("Submit error:", err);
+            SubmitAlert("error", "Data gagal disimpan");
         }
     };
 
     const handleDelete = async (id) => {
-        Swal.fire({
-            title: "Apakah anda yakin?",
-            text: "Data akan dihapus secara permanen!",
-            icon: "warning",
-            showCancelButton: true,
-            reverseButtons: true,
-            cancelButtonColor: "#6b7280",
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Ya, hapus!",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await API.deleteCriteria(id);
-                fetchData();
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Data berhasil dihapus.",
-                    icon: "success",
-                });
-            }
-        });
+        ConfirmDeleteAlert(() => API.deleteCriteria(id), fetchData);
+        // Swal.fire({
+        //     title: "Apakah anda yakin?",
+        //     text: "Data akan dihapus secara permanen!",
+        //     icon: "warning",
+        //     showCancelButton: true,
+        //     reverseButtons: true,
+        //     cancelButtonColor: "#6b7280",
+        //     confirmButtonColor: "#ef4444",
+        //     confirmButtonText: "Ya, hapus!",
+        // }).then(async (result) => {
+        //     if (result.isConfirmed) {
+        //         await API.deleteCriteria(id);
+        //         fetchData();
+        //         Swal.fire({
+        //             title: "Deleted!",
+        //             text: "Data berhasil dihapus.",
+        //             icon: "success",
+        //         });
+        //     }
+        // });
     };
 
     const handleSearch = (e) => {
@@ -136,8 +141,9 @@ export default function CriteriaList() {
             <table className="w-full table-auto border border-gray-300 text-sm">
                 <thead>
                     <tr className="bg-gray-800 text-white">
-                        <th className="border p-2 py-3">Nama</th>
-                        <th className="border p-2 py-3">Kategori</th>
+                        <th className="border p-2 py-3">Tipe</th>
+                        <th className="border p-2 py-3">Nama Kriteria</th>
+                        <th className="border p-2 py-3">Deskripsi Kriteria</th>
                         <th className="border p-2 py-3">Bobot</th>
                         <th className="border p-2 py-3 w-[20%]">Aksi</th>
                     </tr>
@@ -148,8 +154,9 @@ export default function CriteriaList() {
                             key={item.id}
                             className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
                         >
-                            <td className="border p-2">{item.name}</td>
                             <td className="border p-2">{item.type}</td>
+                            <td className="border p-2">{item.name}</td>
+                            <td className="border p-2">{item.description}</td>
                             <td className="border p-2">{item.weight}</td>
                             <td className="border p-2 flex gap-4 justify-center">
                                 <button

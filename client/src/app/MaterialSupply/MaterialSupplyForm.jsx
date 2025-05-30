@@ -44,21 +44,21 @@ export default function MaterialTypeForm({
             >
                 <h2 className="text-lg font-bold mb-4">
                     {mode === "edit"
-                        ? "Edit Material Supply Type"
-                        : "Tambah Material Supply Type"}
+                        ? "Edit Jenis Material"
+                        : "Tambah Jenis Material"}
                 </h2>
                 <InputForm
-                    id="TypeName"
-                    htmlFor="TypeName"
+                    id="Jenis Material"
+                    htmlFor="Jenis Material"
                     name="type_name"
                     type="text"
-                    placeholder="Masukkan nama tipe material"
+                    placeholder="Masukkan nama jenis material"
                     value={form.type_name}
                     onChange={handleChange}
                 />
                 <InputForm
-                    id="Description"
-                    htmlFor="Description"
+                    id="Deskripsi"
+                    htmlFor="Deskripsi"
                     name="description"
                     type="text"
                     placeholder="Masukkan deskripsi (opsional)"
@@ -79,7 +79,7 @@ export default function MaterialTypeForm({
                     >
                         {mode === "edit"
                             ? "Simpan Perubahan"
-                            : "Tambah Material Supply Type"}
+                            : "Tambah Material"}
                     </button>
                 </div>
             </form>

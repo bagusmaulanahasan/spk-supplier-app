@@ -1,3 +1,7 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 -- Tabel criteria
 CREATE TABLE `criteria` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -64,7 +68,7 @@ CREATE TABLE `results` (
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `username` varchar(255) NOT NULL UNIQUE,
+  `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('admin','kepala bagian') DEFAULT 'admin',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -72,4 +76,45 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Tambahkan data users dengan role 'kepala bagian'
+INSERT INTO `users` (`id`, `name`, `username`, `password`, `role`, `created_at`, `updated_at`) VALUES
+(1, 'Kepala Bagian', 'kbgn', '$2b$10$W2yq0PnX/bSOaf64.Wq8IuJJENqMbpNjNHe73.U3/F1PcaO2jBRE2', 'kepala bagian', '2025-05-26 12:33:07', '2025-05-29 02:16:29');
+
+-- Menambahkan kolom untuk jenis metarial yang disupply
+
+CREATE TABLE material_supply_types (
+  id INT NOT NULL AUTO_INCREMENT,
+  type_name VARCHAR(100) NOT NULL,
+  description VARCHAR(255),
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Ubah tabel untuk menambahkan kolom foreign
+
+ALTER TABLE supplier_criteria_values
+  ADD COLUMN material_supply_type_id INT NULL,
+  ADD CONSTRAINT fk_material_supply_type_supplier_criteria_values 
+    FOREIGN KEY (material_supply_type_id)
+    REFERENCES material_supply_types(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE;
+
+ALTER TABLE results
+  ADD COLUMN material_supply_type_id INT NULL,
+  ADD CONSTRAINT fk_material_supply_type_results 
+    FOREIGN KEY (material_supply_type_id)
+    REFERENCES material_supply_types(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE;
+
+ALTER TABLE suppliers
+  ADD COLUMN material_supply_type_id INT NULL,
+  ADD CONSTRAINT fk_material_supply_type_suppliers
+    FOREIGN KEY (material_supply_type_id)
+    REFERENCES material_supply_types(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE;
 

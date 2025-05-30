@@ -226,7 +226,7 @@ const SAWCalculation = () => {
                                         className="odd:bg-white even:bg-gray-50"
                                     >
                                         <td className="border p-2">
-                                            {sup.initial}
+                                            {sup.name}
                                         </td>
                                         {criteria.map((crit) => {
                                             const val =
@@ -280,7 +280,7 @@ const SAWCalculation = () => {
                                             {res.rank}
                                         </td>
                                         <td className="border p-2">
-                                            {res.supplier.initial}
+                                            {res.supplier.name}
                                         </td>
                                         <td className="border p-2">
                                             {res.score.toFixed(4)}
@@ -296,26 +296,29 @@ const SAWCalculation = () => {
             <Card>
                 <CardContent>
                     <h2 className="text-xl font-bold mb-4">Catatan</h2>
-                    <div className="mb-4">
-                        <h3 className="font-semibold">Daftar Supplier:</h3>
-                        <ul className="list-disc ml-6">
-                            {suppliers.map((sup) => (
-                                <li key={sup.id}>
-                                    {sup.initial}: {sup.name}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="font-semibold">Deskripsi Kriteria:</h3>
-                        <ul className="list-disc ml-6">
-                            {criteria.map((crit) => (
-                                <li key={crit.id}>
-                                    {crit.name} ({crit.weight}):{" "}
-                                    {crit.description}
-                                </li>
-                            ))}
-                        </ul>
+                    <hr className="my-4" />
+                    <div className="flex flex-wrap gap-8">
+                        <div className="mb-4">
+                            <h3 className="font-semibold my-2">Daftar Supplier:</h3>
+                            <ol className="list-decimal ml-6">
+                                {suppliers.map((sup) => (
+                                    <li key={sup.id}>{sup.name}</li>
+                                ))}
+                            </ol>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold my-2">
+                                Deskripsi Kriteria:
+                            </h3> 
+                            <ol className=" list-decimal ml-6">
+                                {criteria.map((crit) => (
+                                    <li key={crit.id}>
+                                        {crit.name} ({crit.weight}):{" "}
+                                        {crit.description}
+                                    </li>
+                                ))}
+                            </ol>
+                        </div>
                     </div>
                 </CardContent>
             </Card>

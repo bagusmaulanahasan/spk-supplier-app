@@ -24,7 +24,7 @@ export default function App() {
                 <Route path="/register" element={<RegisterPage/>} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/alternatif" element={<SuppliersPage />} />
-                <Route path="/material-suplai" element={<MaterialSupplyPage />} />
+                <Route path="/material-supply" element={<MaterialSupplyPage />} />
                 <Route path="/kriteria" element={<CriteriaPage />} />
                 <Route path="/pengguna" element={<UsersPage />} />
                 <Route path="/penilaian-kriteria" element={<CriteriaValuesPage />} />
