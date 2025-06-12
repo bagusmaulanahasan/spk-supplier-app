@@ -36,22 +36,53 @@ exports.create = async (req, res) => {
     }
 };
 
+// exports.update = async (req, res) => {
+//     const { username, password, name, role } = req.body;
+//     try {
+//         const hashedPassword = await bcrypt.hash(password, 10); // saltRounds = 10
+//         db.query(
+//             "UPDATE users SET username = ?, password = ?, name = ?, role = ? WHERE id = ?",
+//             [username, hashedPassword, name, role, req.params.id],
+//             (err) => {
+//                 if (err) return res.status(500).json({ error: err.message });
+//                 res.json({ message: "User updated successfully" });
+//             }
+//         );
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// };
+
 exports.update = async (req, res) => {
     const { username, password, name, role } = req.body;
     try {
-        const hashedPassword = await bcrypt.hash(password, 10); // saltRounds = 10
-        db.query(
-            "UPDATE users SET username = ?, password = ?, name = ?, role = ? WHERE id = ?",
-            [username, hashedPassword, name, role, req.params.id],
-            (err) => {
-                if (err) return res.status(500).json({ error: err.message });
-                res.json({ message: "User updated successfully" });
-            }
-        );
+        if (password) {
+            // Jika password ada, update semua field termasuk password
+            const hashedPassword = await bcrypt.hash(password, 10);
+            db.query(
+                "UPDATE users SET username = ?, password = ?, name = ?, role = ? WHERE id = ?",
+                [username, hashedPassword, name, role, req.params.id],
+                (err) => {
+                    if (err) return res.status(500).json({ error: err.message });
+                    res.json({ message: "User updated successfully (with password)" });
+                }
+            );
+        } else {
+            // Jika password kosong/tidak diubah, update tanpa password
+            db.query(
+                "UPDATE users SET username = ?, name = ?, role = ? WHERE id = ?",
+                [username, name, role, req.params.id],
+                (err) => {
+                    if (err) return res.status(500).json({ error: err.message });
+                    res.json({ message: "User updated successfully (without password)" });
+                }
+            );
+        }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 exports.delete = (req, res) => {
     db.query("DELETE FROM users WHERE id = ?", [req.params.id], (err) => {

@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import DataTable from "react-data-table-component";
+// import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -89,46 +89,46 @@ export default function SupplierList() {
         saveAs(blob, "suppliers.xlsx");
     };
 
-    const columns = [
-        { name: "Inisial", selector: (row) => row.initial, sortable: true },
-        { name: "Nama", selector: (row) => row.name, sortable: true },
-        {
-            name: "Actions",
-            cell: (row) => (
-                <div className="space-x-2">
-                    <button
-                        onClick={() => {
-                            setEditing(row);
-                            setShowForm(true);
-                        }}
-                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                        Edit
-                    </button>
-                    <button
-                        onClick={() => handleDelete(row.id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                        Delete
-                    </button>
-                </div>
-            ),
-        },
-    ];
+    // const columns = [
+    //     { name: "Inisial", selector: (row) => row.initial, sortable: true },
+    //     { name: "Nama", selector: (row) => row.name, sortable: true },
+    //     {
+    //         name: "Actions",
+    //         cell: (row) => (
+    //             <div className="space-x-2">
+    //                 <button
+    //                     onClick={() => {
+    //                         setEditing(row);
+    //                         setShowForm(true);
+    //                     }}
+    //                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+    //                 >
+    //                     Edit
+    //                 </button>
+    //                 <button
+    //                     onClick={() => handleDelete(row.id)}
+    //                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+    //                 >
+    //                     Delete
+    //                 </button>
+    //             </div>
+    //         ),
+    //     },
+    // ];
 
-    const customStyles = {
-        rows: {
-            style: { minHeight: "48px" },
-            stripedStyle: { backgroundColor: "#f9fafb" },
-        },
-        headCells: {
-            style: {
-                backgroundColor: "#1f2937",
-                color: "white",
-                fontWeight: "bold",
-            },
-        },
-    };
+    // const customStyles = {
+    //     rows: {
+    //         style: { minHeight: "48px" },
+    //         stripedStyle: { backgroundColor: "#f9fafb" },
+    //     },
+    //     headCells: {
+    //         style: {
+    //             backgroundColor: "#1f2937",
+    //             color: "white",
+    //             fontWeight: "bold",
+    //         },
+    //     },
+    // };
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
@@ -171,14 +171,51 @@ export default function SupplierList() {
                 </button>
             </div>
 
-            <DataTable
+            <table className="w-full table-auto border border-gray-300 text-sm">
+                <thead>
+                    <tr className="bg-gray-800 text-white">
+                        <th className="border p-2 py-3">Inisial</th>
+                        <th className="border p-2 py-3">Nama</th>
+                        <th className="border p-2 py-3 w-[20%]">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredData.map((suppliers) => (
+                        <tr
+                            key={suppliers.id}
+                            className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+                        >
+                            <td className="border p-2">{suppliers.initial}</td>
+                            <td className="border p-2">{suppliers.name}</td>
+                            <td className="border p-2 flex gap-4 justify-center">
+                                <button
+                                    onClick={() => {
+                                        setEditing(suppliers);
+                                        setShowForm(true);
+                                    }}
+                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(suppliers.id)}
+                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {/* <DataTable
                 columns={columns}
                 data={filteredData}
                 pagination
                 highlightOnHover
                 striped
                 customStyles={customStyles}
-            />
+            /> */}
         </div>
     );
 }

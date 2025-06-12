@@ -2,13 +2,17 @@ import React, { useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 // import { useNavigate } from "react-router-dom";
-import TopNav from "@/components/Layouts/TopNav,";
+import TopNav from "@/components/Layouts/TopNav";
 import Footer from "@/components/Layouts/Footer";
+import ShowOnScroll from "@/components/Animation/ShowOnScroll";
 
 // Import images
 import LogoMultindoJayaMandiri from "../assets/images/logo-multindo-jaya-mandiri.jpg";
 import LobyHotel from "../assets/images/hotel/loby-hotel.jpg";
-import ShowOnScroll from "@/components/Animation/ShowOnScroll";
+import HangingProduct from "../assets/images/products/hanging.jpg";
+import HangerProduct from "../assets/images/products/hanger.jpg";
+import ChairProduct from "../assets/images/products/chair.jpg";
+import toiletriesProduct from "../assets/images/products/toiletries.jpg";
 
 // Registrasikan plugin ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -25,7 +29,7 @@ const HomePage = () => {
             ".logo",
             {
                 y: offset,
-                scale: 3,
+                scale: 2,
             },
             {
                 color: "white",
@@ -57,12 +61,39 @@ const HomePage = () => {
                     <img
                         src={LogoMultindoJayaMandiri}
                         alt="Logo Multindo Jaya Mandiri"
-                        className="w-44"
+                        className="w-56"
                     />
                 </div>
 
                 {/* Section sebagai trigger animasi */}
-                <section className="content mt-12 min-h-screen bg-white flex items-center justify-center"></section>
+                <section className="content relative mt-12 min-h-screen bg-white flex justify-between items-center">
+                    <div className="w-1/3 h-full p-4 flex flex-col">
+                        <div className="flex justify-center h-[45rem] items-center bg-black flex-col rounded-full overflow-hidden w-[30rem]">
+                            <img
+                                src={toiletriesProduct}
+                                alt="toiletries"
+                                className=""
+                            />
+                            <img
+                                src={ChairProduct}
+                                alt="chair"
+                                className=""
+                            />
+                            <img
+                                src={HangerProduct}
+                                alt="hanger"
+                                className=""
+                            />
+                        </div>
+                    </div>
+                    <div className="flex flex-col items-end w-1/3 h-full px-4">
+                        <img
+                            src={HangingProduct}
+                            alt="hanging"
+                            className="w-[30rem] rounded-full"
+                        />
+                    </div>
+                </section>
 
                 {/* Section tambahan agar scroll terjadi */}
                 <section className="relative min-h-screen bg-gray-100 flex items-center justify-around">
