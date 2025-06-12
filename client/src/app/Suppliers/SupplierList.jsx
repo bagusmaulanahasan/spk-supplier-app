@@ -1,10 +1,11 @@
 import Swal from "sweetalert2";
-// import DataTable from "react-data-table-component";
 import * as API from "../../api/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import SupplierForm from "./SupplierForm";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import ConfirmDeleteAlert from "@/components/Alerts/ConfirmDelete";
+import SubmitAlert from "@/components/Alerts/Submit";
 
 export default function SupplierList() {
     const [suppliers, setSuppliers] = useState([]);
@@ -12,7 +13,9 @@ export default function SupplierList() {
     const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const [showForm, setShowForm] = useState(false);
+    const [materialTypes, setMaterialTypes] = useState([]);
 
+    // Fetch data suppliers
     const fetchData = async () => {
         try {
             const res = await API.getSuppliers();
@@ -27,6 +30,22 @@ export default function SupplierList() {
         fetchData();
     }, []);
 
+    // Fetch material types dan buat mapping dari id ke nama material
+    useEffect(() => {
+        API.getMaterialTypes()
+            .then((res) => setMaterialTypes(res.data))
+            .catch((err) =>
+                console.error("Error fetching material types:", err)
+            );
+    }, []);
+
+    const materialMap = useMemo(() => {
+        return materialTypes.reduce((acc, material) => {
+            acc[material.id] = material.type_name;
+            return acc;
+        }, {});
+    }, [materialTypes]);
+
     const handleSubmit = async (form) => {
         try {
             if (editing) {
@@ -34,34 +53,17 @@ export default function SupplierList() {
             } else {
                 await API.createSupplier(form);
             }
+            SubmitAlert("success", "Data berhasil disimpan");
             setEditing(null);
             fetchData();
         } catch (err) {
             console.error("Submit error:", err);
+            SubmitAlert("error", "Data gagal disimpan");
         }
     };
 
     const handleDelete = async (id) => {
-        Swal.fire({
-            title: "Apakah anda yakin?",
-            text: "Data akan dihapus secara permanen!",
-            icon: "warning",
-            showCancelButton: true,
-            reverseButtons: true,
-            cancelButtonColor: "#6b7280",
-            confirmButtonColor: "#ef4444",
-            confirmButtonText: "Ya, hapus!",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await API.deleteSupplier(id);
-                fetchData();
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Data berhasil dihapus.",
-                    icon: "success",
-                });
-            }
-        });
+        ConfirmDeleteAlert(() => API.deleteSupplier(id), fetchData);
     };
 
     const handleSearch = (e) => {
@@ -88,47 +90,6 @@ export default function SupplierList() {
         });
         saveAs(blob, "suppliers.xlsx");
     };
-
-    // const columns = [
-    //     { name: "Inisial", selector: (row) => row.initial, sortable: true },
-    //     { name: "Nama", selector: (row) => row.name, sortable: true },
-    //     {
-    //         name: "Actions",
-    //         cell: (row) => (
-    //             <div className="space-x-2">
-    //                 <button
-    //                     onClick={() => {
-    //                         setEditing(row);
-    //                         setShowForm(true);
-    //                     }}
-    //                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-    //                 >
-    //                     Edit
-    //                 </button>
-    //                 <button
-    //                     onClick={() => handleDelete(row.id)}
-    //                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-    //                 >
-    //                     Delete
-    //                 </button>
-    //             </div>
-    //         ),
-    //     },
-    // ];
-
-    // const customStyles = {
-    //     rows: {
-    //         style: { minHeight: "48px" },
-    //         stripedStyle: { backgroundColor: "#f9fafb" },
-    //     },
-    //     headCells: {
-    //         style: {
-    //             backgroundColor: "#1f2937",
-    //             color: "white",
-    //             fontWeight: "bold",
-    //         },
-    //     },
-    // };
 
     return (
         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
@@ -174,48 +135,71 @@ export default function SupplierList() {
             <table className="w-full table-auto border border-gray-300 text-sm">
                 <thead>
                     <tr className="bg-gray-800 text-white">
-                        <th className="border p-2 py-3">Inisial</th>
+                        <th className="border p-2 py-3 w-[30%]">Material Suplai</th>
                         <th className="border p-2 py-3">Nama</th>
                         <th className="border p-2 py-3 w-[20%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredData.map((suppliers) => (
-                        <tr
-                            key={suppliers.id}
-                            className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
-                        >
-                            <td className="border p-2">{suppliers.initial}</td>
-                            <td className="border p-2">{suppliers.name}</td>
-                            <td className="border p-2 flex gap-4 justify-center">
-                                <button
-                                    onClick={() => {
-                                        setEditing(suppliers);
-                                        setShowForm(true);
-                                    }}
-                                    className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(suppliers.id)}
-                                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {useMemo(() => {
+                        const rows = [];
+                        // Kelompokkan data berdasarkan material_supply_type_id
+                        const grouped = {};
+                        filteredData.forEach((item) => {
+                            const key = item.material_supply_type_id;
+                            if (!grouped[key]) {
+                                grouped[key] = [];
+                            }
+                            grouped[key].push(item);
+                        });
+                        // Iterasi tiap kelompok material
+                        Object.keys(grouped).forEach((materialId) => {
+                            const group = grouped[materialId];
+                            group.forEach((item, index) => {
+                                rows.push(
+                                    <tr
+                                        key={item.id}
+                                        className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
+                                    >
+                                        {index === 0 && (
+                                            <td
+                                                className="border p-2 text-center text-lg"
+                                                rowSpan={group.length}
+                                            >
+                                                {materialMap[materialId] ||
+                                                    materialId}
+                                            </td>
+                                        )}
+                                        <td className="border p-2">
+                                            {item.name}
+                                        </td>
+                                        <td className="border p-2 flex gap-4 justify-center">
+                                            <button
+                                                onClick={() => {
+                                                    setEditing(item);
+                                                    setShowForm(true);
+                                                }}
+                                                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(item.id)
+                                                }
+                                                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            });
+                        });
+                        return rows;
+                    }, [filteredData, materialMap])}
                 </tbody>
             </table>
-            {/* <DataTable
-                columns={columns}
-                data={filteredData}
-                pagination
-                highlightOnHover
-                striped
-                customStyles={customStyles}
-            /> */}
         </div>
     );
 }

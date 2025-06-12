@@ -23,6 +23,16 @@ API.interceptors.request.use((config) => {
 export const login = (data) => API.post("/login", data);
 export const register = (data) => API.post("/register", data);
 
+export const getUsers = () => API.get("/users");
+export const createUser = (data) => API.post("/users", data);
+export const updateUser = (id, data) => API.put(`/users/${id}`, data);
+export const deleteUser = (id) => API.delete(`/users/${id}`);
+
+export const getMaterialTypes = () => API.get("/material-supply");
+export const createMaterialTypes = (data) => API.post("/material-supply", data);
+export const updateMaterialTypes = (id, data) => API.put(`/material-supply/${id}`, data);
+export const deleteMaterialTypes = (id) => API.delete(`/material-supply/${id}`);
+
 export const getCriteria = () => API.get("/criteria");
 export const getCriteriaById = (id) => API.get(`/criteria/${id}`);
 export const createCriteria = (data) => API.post("/criteria", data);
@@ -33,11 +43,6 @@ export const getSuppliers = () => API.get("/suppliers");
 export const createSupplier = (data) => API.post("/suppliers", data);
 export const updateSupplier = (id, data) => API.put(`/suppliers/${id}`, data);
 export const deleteSupplier = (id) => API.delete(`/suppliers/${id}`);
-
-export const getUsers = () => API.get("/users");
-export const createUser = (data) => API.post("/users", data);
-export const updateUser = (id, data) => API.put(`/users/${id}`, data);
-export const deleteUser = (id) => API.delete(`/users/${id}`);
 
 export const getCriteriaValues = () => API.get("/criteria-values");
 export const createCriteriaValue = (data) => API.post("/criteria-values", data);

@@ -48,10 +48,10 @@ exports.create = (req, res) => {
         return res.status(400).json({ error: "Expected an array of results" });
     }
 
-    const values = results.map((r) => [r.supplier_id, r.score, r.ranking]);
+    const values = results.map((r) => [r.material_supply_type_id, r.supplier_id, r.score, r.ranking]);
     console.log("Values to insert:", values);
 
-    const sql = "INSERT INTO results (supplier_id, score, ranking) VALUES ?";
+    const sql = "INSERT INTO results (material_supply_type_id, supplier_id, score, ranking) VALUES ?";
     db.query(sql, [values], (err, result) => {
         if (err) {
             console.error("MySQL Error:", err);

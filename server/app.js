@@ -40,19 +40,19 @@ const resultsRoutes = require("./routes/resultsRoutes");
 const supplierCriteriaValuesRoutes = require("./routes/supplierCriteriaValuesRoutes");
 const suppliersRoutes = require("./routes/suppliersRoutes");
 const usersRoutes = require("./routes/usersRoutes");
-const weightsRoutes = require("./routes/weightsRoutes");
 const login = require("./routes/loginRoutes");
 const register = require("./routes/registerRoutes");
+const materialTypesRoutes = require("./routes/materialTypeRoutes");
 
 app.use("/api/register", register);
 app.use("/api/login", login);
+app.use("/api/users", usersRoutes);
+app.use("/api/material-supply", materialTypesRoutes);
 app.use("/api/criteria", criteriaRoutes);
 app.use("/api/criteria-values", criteriaValuesRoutes);
 app.use("/api/results", resultsRoutes);
 app.use("/api/supplier-criteria-values", supplierCriteriaValuesRoutes);
 app.use("/api/suppliers", suppliersRoutes);
-app.use("/api/users", usersRoutes);
-app.use("/api/weights", weightsRoutes);
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);
