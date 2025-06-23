@@ -13,7 +13,7 @@ import HangingProduct from "../assets/images/products/hanging.jpg";
 import HangerProduct from "../assets/images/products/hanger.jpg";
 import ChairProduct from "../assets/images/products/chair.jpg";
 import toiletriesProduct from "../assets/images/products/toiletries.jpg";
-import heroImages from "../assets/images/hero_images.png";
+// import heroImages from "../assets/images/hero_images.png";
 
 // Registrasikan plugin ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -92,7 +92,8 @@ const HomePage = () => {
                     </div>
                 </section> */}
 
-                <section className="content relative mt-12 min-h-screen bg-white flex justify-center items-end" style={{ backgroundImage: `url(${heroImages})`, backgroundSize: "cover", width: "100%", height: "60dvh", backgroundPositionY: "center" }}>
+                <section className="content relative mt-12 min-h-screen bg-white flex justify-center items-end">
+                {/* <section className="content relative mt-12 min-h-screen bg-white flex justify-center items-end" style={{ backgroundImage: `url(${heroImages})`, backgroundSize: "cover", width: "100%", height: "60dvh", backgroundPositionY: "center" }}> */}
                     {/* <div className=" max-w-2xl mb-32 flex flex-col justify-center">
                         <h1 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight text-gray-800 flex flex-col justify-center items-center">
                             Selamat Datang di <br />
