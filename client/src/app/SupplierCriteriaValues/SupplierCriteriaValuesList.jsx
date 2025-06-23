@@ -1,294 +1,9 @@
-// import { useEffect, useState, useMemo } from "react";
-// import * as API from "../../api/api";
-// import * as XLSX from "xlsx";
-// import { saveAs } from "file-saver";
-// import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
-// import Swal from "sweetalert2";
-// import SubmitAlert from "@/components/Alerts/Submit";
-
-// export default function SupplierCriteriaValuesList() {
-//     const [data, setData] = useState([]);
-//     const [suppliers, setSuppliers] = useState({});
-//     const [criteria, setCriteria] = useState({});
-//     const [materialTypes, setMaterialTypes] = useState([]);
-//     const [editing, setEditing] = useState(null);
-//     const [search, setSearch] = useState("");
-//     const [filteredData, setFilteredData] = useState([]);
-//     const [showForm, setShowForm] = useState(false);
-
-// console.log(filteredData);
-
-//     const fetchData = async () => {
-//         try {
-//             const [valuesRes, supplierRes, criteriaRes] = await Promise.all([
-//                 API.getSupplierCriteriaValues(),
-//                 API.getSuppliers(),
-//                 API.getCriteria(),
-//             ]);
-
-//             const supplierMap = {};
-//             supplierRes.data.forEach((s) => (supplierMap[s.id] = s.name));
-//             const criteriaMap = {};
-//             criteriaRes.data.forEach((c) => (criteriaMap[c.id] = c.name));
-
-//             const enrichedData = valuesRes.data.map((item) => ({
-//                 ...item,
-//                 supplierName: supplierMap[item.supplier_id] || "Unknown",
-//                 criteriaName: criteriaMap[item.criteria_id] || "Unknown",
-//             }));
-
-//             setData(enrichedData);
-//             setFilteredData(enrichedData);
-//             setSuppliers(supplierMap);
-//             setCriteria(criteriaMap);
-//         } catch (err) {
-//             console.error("Fetch error:", err);
-//         }
-//     };
-
-//     useEffect(() => {
-//         fetchData();
-//     }, []);
-
-//     useEffect(() => {
-//         API.getMaterialTypes()
-//             .then((res) => setMaterialTypes(res.data))
-//             .catch((err) =>
-//                 console.error("Error fetching material types:", err)
-//             );
-//     }, []);
-
-//     const materialMap = useMemo(() => {
-//         return materialTypes.reduce((acc, mat) => {
-//             acc[mat.id] = mat.type_name;
-//             return acc;
-//         }, {});
-//     }, [materialTypes]);
-
-//     const handleSubmit = async (form) => {
-//         try {
-//             if (editing) {
-//                 await API.updateSupplierCriteriaValue(editing.id, form);
-//             } else {
-//                 await API.createSupplierCriteriaValue(form);
-//             }
-//             SubmitAlert("success", "Data berhasil disimpan");
-//             setEditing(null);
-//             fetchData();
-//         } catch (err) {
-//             console.error("Submit error:", err);
-//             SubmitAlert("error", "Data gagal disimpan");
-//         }
-//     };
-
-//     const handleSearch = (e) => {
-//         const term = e.target.value.toLowerCase();
-//         setSearch(term);
-//         const filtered = data.filter(
-//             (item) =>
-//                 (item.supplierName || "").toLowerCase().includes(term) ||
-//                 (item.criteriaName || "").toLowerCase().includes(term) ||
-//                 String(item.value || "")
-//                     .toLowerCase()
-//                     .includes(term)
-//         );
-//         setFilteredData(filtered);
-//     };
-
-//     const handleExport = () => {
-//         const exportData = filteredData.map(
-//             ({ id, supplierName, criteriaName, value }) => ({
-//                 ID: id,
-//                 Supplier: supplierName,
-//                 Criteria: criteriaName,
-//                 Value: value,
-//             })
-//         );
-//         const worksheet = XLSX.utils.json_to_sheet(exportData);
-//         const workbook = XLSX.utils.book_new();
-//         XLSX.utils.book_append_sheet(
-//             workbook,
-//             worksheet,
-//             "SupplierCriteriaValues"
-//         );
-//         const excelBuffer = XLSX.write(workbook, {
-//             bookType: "xlsx",
-//             type: "array",
-//         });
-//         const blob = new Blob([excelBuffer], {
-//             type: "application/octet-stream",
-//         });
-//         saveAs(blob, "supplier_criteria_values.xlsx");
-//     };
-
-//     const groupedRows = useMemo(() => {
-//         const result = [];
-
-//         const grouped = {};
-//         filteredData.forEach((item) => {
-//             const key = `${item.material_supply_type_id}_${item.supplier_id}`;
-//             if (!grouped[key]) {
-//                 grouped[key] = {
-//                     materialId: item.material_supply_type_id,
-//                     supplierId: item.supplier_id,
-//                     supplierName: item.supplierName,
-//                     criteriaValues: {},
-//                 };
-//             }
-//             grouped[key].criteriaValues[item.criteria_id] = item.value;
-//         });
-
-//         for (let key in grouped) {
-//             result.push(grouped[key]);
-//         }
-
-//         return result;
-//     }, [filteredData]);
-
-//     return (
-//         <div className="p-6 space-y-4 bg-white rounded shadow-md max-w-8xl mx-auto">
-//             <h2 className="text-2xl font-semibold text-gray-700">
-//                 Penilaian Alternatif (Supplier)
-//             </h2>
-//             <hr />
-//             <button
-//                 className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-//                 onClick={() => {
-//                     setEditing(null);
-//                     setShowForm(true);
-//                 }}
-//             >
-//                 Tambah Penilaian Alternatif
-//             </button>
-//             <SupplierCriteriaValueForm
-//                 mode={editing ? "edit" : "add"}
-//                 onSubmit={handleSubmit}
-//                 initialData={editing}
-//                 showForm={showForm}
-//                 setShowForm={setShowForm}
-//             />
-//             <div className="flex justify-between items-center mb-4">
-//                 <input
-//                     type="text"
-//                     value={search}
-//                     onChange={handleSearch}
-//                     placeholder="Search..."
-//                     className="border border-gray-300 rounded px-3 py-1 w-1/3"
-//                 />
-//                 <button
-//                     onClick={handleExport}
-//                     className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-//                 >
-//                     Download Excel
-//                 </button>
-//             </div>
-//             <table className="w-full table-auto border border-gray-300 text-sm">
-//                 <thead>
-//                     <tr className="bg-gray-800 text-white">
-//                         <th className="border p-2 py-3">Material Suplai</th>
-//                         <th className="border p-2 py-3">Supplier</th>
-//                         {Object.entries(criteria).map(([id, name]) => (
-//                             <th key={id} className="border p-2 py-3">
-//                                 {name}
-//                             </th>
-//                         ))}
-//                         <th className="border p-2 py-3">Aksi</th>
-//                     </tr>
-//                 </thead>
-//                 <tbody>
-//                     {groupedRows.map((row, idx) => (
-//                         <tr
-//                             key={idx}
-//                             className="odd:bg-white even:bg-gray-50 hover:bg-gray-200"
-//                         >
-//                             <td className="border p-2 text-center">
-//                                 {materialMap[row.materialId] || row.materialId}
-//                             </td>
-//                             <td className="border p-2 text-center">
-//                                 {row.supplierName}
-//                             </td>
-//                             {Object.keys(criteria).map((criteriaId) => (
-//                                 <td
-//                                     key={criteriaId}
-//                                     className="border p-2 text-center"
-//                                 >
-//                                     {row.criteriaValues[criteriaId] ?? "-"}
-//                                 </td>
-//                             ))}
-//                             <td className="border p-2 flex justify-center gap-2">
-//                                 <button
-//                                     onClick={() => {
-//                                         const editData = {
-//                                             material_supply_type_id:
-//                                                 row.materialId,
-//                                             supplier_id: row.supplierId,
-//                                             values: Object.entries(
-//                                                 row.criteriaValues
-//                                             ).map(([criteria_id, value]) => ({
-//                                                 criteria_id:
-//                                                     Number(criteria_id),
-//                                                 value,
-//                                             })),
-//                                         };
-//                                         setEditing(editData);
-//                                         setShowForm(true);
-//                                     }}
-//                                     className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-//                                 >
-//                                     Edit
-//                                 </button>
-//                                 <button
-//                                     onClick={async () => {
-//                                         const confirm = await Swal.fire({
-//                                             title: "Hapus semua data kriteria supplier ini?",
-//                                             text: "Seluruh nilai untuk supplier ini akan dihapus!",
-//                                             icon: "warning",
-//                                             showCancelButton: true,
-//                                             confirmButtonColor: "#ef4444",
-//                                             cancelButtonText: "Batal",
-//                                             confirmButtonText: "Ya, hapus!",
-//                                         });
-
-//                                         if (confirm.isConfirmed) {
-//                                             const toDelete = data.filter(
-//                                                 (d) =>
-//                                                     d.supplier_id ===
-//                                                         row.supplierId &&
-//                                                     d.material_supply_type_id ===
-//                                                         row.materialId
-//                                             );
-//                                             for (let val of toDelete) {
-//                                                 await API.deleteSupplierCriteriaValue(
-//                                                     val.id
-//                                                 );
-//                                             }
-//                                             fetchData();
-//                                             Swal.fire(
-//                                                 "Deleted!",
-//                                                 "Data berhasil dihapus.",
-//                                                 "success"
-//                                             );
-//                                         }
-//                                     }}
-//                                     className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-//                                 >
-//                                     Delete
-//                                 </button>
-//                             </td>
-//                         </tr>
-//                     ))}
-//                 </tbody>
-//             </table>
-//         </div>
-//     );
-// }
 import { useEffect, useState, useMemo } from "react";
 import * as API from "../../api/api";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import SupplierCriteriaValueForm from "./SupplierCriteriaValuesForm";
 import SubmitAlert from "@/components/Alerts/Submit";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function SupplierCriteriaValuesList() {
     const [data, setData] = useState([]);
@@ -337,6 +52,20 @@ export default function SupplierCriteriaValuesList() {
 
     useEffect(() => {
         fetchData();
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible") {
+                fetchData();
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => {
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange
+            );
+        };
     }, []);
 
     const materialMap = useMemo(() => {
@@ -369,33 +98,6 @@ export default function SupplierCriteriaValuesList() {
         setFilteredData(filtered);
     };
 
-    // Export filtered data to Excel
-    const handleExport = () => {
-        const exportData = filteredData.map(
-            ({ id, supplierName, criteriaName, value }) => ({
-                ID: id,
-                Supplier: supplierName,
-                Criteria: criteriaName,
-                Value: value,
-            })
-        );
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(
-            workbook,
-            worksheet,
-            "SupplierCriteriaValues"
-        );
-        const excelBuffer = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "array",
-        });
-        const blob = new Blob([excelBuffer], {
-            type: "application/octet-stream",
-        });
-        saveAs(blob, "supplier_criteria_values.xlsx");
-    };
-
     // Submit handler for add/edit
     const handleSubmit = async (form) => {
         try {
@@ -408,20 +110,12 @@ export default function SupplierCriteriaValuesList() {
             setEditing(null);
             setShowForm(false);
             await fetchData();
-            // const valuesRes = await API.getSupplierCriteriaValues();
-            // const enrichedData = valuesRes.data.map((item) => ({
-            //     ...item,
-            //     criteriaName: criteria[item.criteria_id] || "Unknown",
-            // }));
-            // setData(enrichedData);
-            // setFilteredData(enrichedData);
         } catch (err) {
             console.error("Submit error:", err);
             SubmitAlert("error", "Data gagal disimpan");
         }
     };
 
-    // Group filtered data by material and supplier for table rendering
     const groupedRows = useMemo(() => {
         const groupedByMaterial = {};
 
@@ -447,7 +141,6 @@ export default function SupplierCriteriaValuesList() {
             suppliers[item.supplier_id].values[item.criteria_id] = item.value;
         });
 
-        // Prepare rows with rowspan for material supply
         const rows = [];
 
         Object.entries(groupedByMaterial).forEach(([matId, matData]) => {
@@ -463,7 +156,7 @@ export default function SupplierCriteriaValuesList() {
                         {idx === 0 && (
                             <td
                                 rowSpan={rowspan}
-                                className="border p-2 text-center text-lg"
+                                className="border p-2 text-lg"
                             >
                                 {matData.materialName}
                             </td>
@@ -585,12 +278,12 @@ export default function SupplierCriteriaValuesList() {
                     placeholder="Search..."
                     className="border border-gray-300 rounded px-3 py-1 w-1/3"
                 />
-                <button
+                {/* <button
                     onClick={handleExport}
                     className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
                 >
                     Download Excel
-                </button>
+                </button> */}
             </div>
 
             <table className="w-full table-auto border border-gray-300 text-sm">

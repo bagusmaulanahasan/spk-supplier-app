@@ -13,7 +13,8 @@ const cors = require("cors");
 const allowedOrigins = [
     "http://localhost:5173", // URL ReactJS
     "http://192.168.1.59:5173", // URL local
-    "https://d966-36-90-7-44.ngrok-free.app", // URL ngrok
+    // "https://d966-36-90-7-44.ngrok-free.app", // URL ngrok
+    "https://0xcb16s0-5173.asse.devtunnels.ms" // URL Forward public port
 ];
 
 app.use(

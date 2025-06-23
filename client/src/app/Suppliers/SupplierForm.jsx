@@ -100,7 +100,7 @@ export default function SupplierForm({
 
                             <div className="w-full">
                                 <label className="block text-slate-700 text-sm font-bold mb-2">
-                                    Material Suplai
+                                    Material Supply
                                 </label>
                                 <select
                                     name="material_supply_type_id"

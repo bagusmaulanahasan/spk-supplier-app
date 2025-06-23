@@ -80,7 +80,7 @@ const FormLogin = () => {
                 />
             </div>
             <InputForm
-                htmlFor="username"
+                htmlFor="Username"
                 type="text"
                 placeholder="Masukkan username"
                 name="username"
@@ -93,7 +93,7 @@ const FormLogin = () => {
                 />
             </div>
             <InputForm
-                htmlFor="password"
+                htmlFor="Password"
                 type="password"
                 placeholder="Masukkan password"
                 name="password"

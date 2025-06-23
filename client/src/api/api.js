@@ -55,6 +55,7 @@ export const getResultByDate = () => API.get("/results/dates")
 export const createResult = (data) => API.post("/results", data);
 export const updateResult = (id, data) => API.put(`/results/${id}`, data);
 export const deleteResult = (id) => API.delete(`/results/${id}`);
+export const deleteAllResults = () =>API.delete('/results/all');
 
 export const getSupplierCriteriaValues = () =>
     API.get("/supplier-criteria-values");
