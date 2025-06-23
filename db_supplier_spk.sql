@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 30, 2025 at 01:03 AM
+-- Generation Time: May 30, 2025 at 01:07 AM
 -- Server version: 8.0.41-0ubuntu0.24.04.1
 -- PHP Version: 8.3.6
 
@@ -45,7 +45,7 @@ INSERT INTO `criteria` (`id`, `name`, `description`, `type`, `weight`, `created_
 (6, 'C1', 'Tingkat Diskon', 'benefit', 0.30, '2025-05-29 03:24:49', '2025-05-29 21:11:59'),
 (7, 'C2', 'Kualitas Produk', 'benefit', 0.30, '2025-05-29 03:24:49', '2025-05-29 03:24:49'),
 (8, 'C3', 'Lamanya Produksi', 'cost', 0.20, '2025-05-29 04:23:20', '2025-05-29 04:23:20'),
-(9, 'C4', 'Kualitas Pelayanan', 'benefit', 0.20, '2025-05-29 04:23:20', '2025-05-29 21:41:47');
+(9, 'C4', 'Kualitas Pelayanan', 'benefit', 0.20, '2025-05-29 04:23:20', '2025-05-30 01:06:37');
 
 -- --------------------------------------------------------
 
@@ -99,8 +99,7 @@ CREATE TABLE `material_supply_types` (
 --
 
 INSERT INTO `material_supply_types` (`id`, `type_name`, `description`, `created_at`, `updated_at`) VALUES
-(2, 'Stainless', 'Stainless', '2025-05-29 02:50:50', '2025-05-29 02:50:50'),
-(5, 'Plano Kertas', 'Test Perhitungan SPK SAW', '2025-05-30 00:57:14', '2025-05-30 00:57:14');
+(2, 'Stainless', 'Stainless', '2025-05-29 02:50:50', '2025-05-29 02:50:50');
 
 -- --------------------------------------------------------
 
@@ -209,10 +208,10 @@ INSERT INTO `supplier_criteria_values` (`id`, `supplier_id`, `criteria_id`, `val
 (57, 12, 7, 2, '2025-05-29 22:30:23', '2025-05-29 22:30:23', 2),
 (58, 12, 8, 3, '2025-05-29 22:30:23', '2025-05-29 22:30:23', 2),
 (59, 12, 9, 2, '2025-05-29 22:30:23', '2025-05-29 22:30:23', 2),
-(80, 13, 6, 1, '2025-05-29 22:40:42', '2025-05-29 22:40:42', 2),
-(81, 13, 7, 2, '2025-05-29 22:40:42', '2025-05-29 22:40:42', 2),
-(82, 13, 8, 3, '2025-05-29 22:40:42', '2025-05-29 22:40:50', 2),
-(83, 13, 9, 2, '2025-05-29 22:40:42', '2025-05-29 22:40:42', 2);
+(84, 13, 6, 1, '2025-05-30 01:07:20', '2025-05-30 01:07:20', 2),
+(85, 13, 7, 2, '2025-05-30 01:07:20', '2025-05-30 01:07:20', 2),
+(86, 13, 8, 1, '2025-05-30 01:07:20', '2025-05-30 01:07:20', 2),
+(87, 13, 9, 2, '2025-05-30 01:07:20', '2025-05-30 01:07:20', 2);
 
 -- --------------------------------------------------------
 
@@ -306,7 +305,7 @@ ALTER TABLE `criteria`
 -- AUTO_INCREMENT for table `criteria_values`
 --
 ALTER TABLE `criteria_values`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `material_supply_types`
@@ -330,7 +329,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `supplier_criteria_values`
 --
 ALTER TABLE `supplier_criteria_values`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT for table `users`

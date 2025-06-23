@@ -66,17 +66,39 @@ exports.create = (req, res) => {
 };
 
 // Edit satu data
+// exports.update = (req, res) => {
+//     const { criteria_id, value, description } = req.body;
+//     db.query(
+//         "UPDATE criteria_values SET criteria_id = ?, value = ?, description = ? WHERE id = ?",
+//         [criteria_id, value, description, req.params.id],
+//         (err) => {
+//             if (err) return res.status(500).json({ error: err.message });
+//             res.json({ message: "Criteria value updated successfully" });
+//         }
+//     );
+// };
+
 exports.update = (req, res) => {
-    const { criteria_id, value, description } = req.body;
-    db.query(
-        "UPDATE criteria_values SET criteria_id = ?, value = ?, description = ? WHERE id = ?",
-        [criteria_id, value, description, req.params.id],
-        (err) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: "Criteria value updated successfully" });
-        }
-    );
+    const updates = req.body; // array of { id, criteria_id, value, description }
+
+    const updatePromises = updates.map((item) => {
+        return new Promise((resolve, reject) => {
+            db.query(
+                "UPDATE criteria_values SET criteria_id = ?, value = ?, description = ? WHERE id = ?",
+                [item.criteria_id, item.value, item.description, item.id],
+                (err) => {
+                    if (err) return reject(err);
+                    resolve();
+                }
+            );
+        });
+    });
+
+    Promise.all(updatePromises)
+        .then(() => res.json({ message: "All records updated successfully" }))
+        .catch((err) => res.status(500).json({ error: err.message }));
 };
+
 
 
 exports.delete = (req, res) => {

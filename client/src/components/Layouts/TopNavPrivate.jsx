@@ -46,10 +46,10 @@ const TopNavPrivate = () => {
 
                 {/* Dropdown on hover */}
                 <div className="h-fit w-44 gap-2 rounded absolute right-0 top-8 hidden group-hover:flex flex-col items-end p-4 z-50 ">
-                    <button className="flex justify-start gap-2 items-center py-2 w-full text-end px-4 cursor-pointer rounded-md border-2 border-green-600 hover:bg-green-600/10">
+                    {/* <button className="flex justify-start gap-2 items-center py-2 w-full text-end px-4 cursor-pointer rounded-md border-2 border-green-600 hover:bg-green-600/10">
                         <FontAwesomeIcon icon={faEdit} />
                         <span>Edit Profile</span>
-                    </button>
+                    </button> */}
                     <button
                         onClick={() => {
                             localStorage.clear();
@@ -67,19 +67,3 @@ const TopNavPrivate = () => {
 };
 
 export default TopNavPrivate;
-
-
-{/* <button className="flex justify-center gap-2 items-center py-2 w-full text-end px-2 cursor-pointer hover:bg-green-700 bg-green-600 rounded text-white">
-                        <FontAwesomeIcon icon={faEdit} />
-                        <span>Edit Profile</span>
-                    </button>
-                    <button
-                        onClick={() => {
-                            localStorage.clear();
-                            navigate("/login");
-                        }}
-                        className="flex justify-center items-end gap-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition duration-200 border border-red-600/50 shadow-sm cursor-pointer px-4 w-full py-2"
-                    >
-                        <LogOut size={18} />
-                        <span>Logout</span>
-                    </button> */}

@@ -163,3 +163,20 @@ exports.getDates = (req, res) => {
         }
     );
 };
+
+exports.deleteAllResults = (req, res) => {
+    const sql = "DELETE FROM results";
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error("Error deleting all results:", err);
+            return res.status(500).json({ error: "Failed to delete all results" });
+        }
+
+        res.json({
+            message: "All results deleted successfully",
+            deletedCount: result.affectedRows,
+        });
+    });
+};
+

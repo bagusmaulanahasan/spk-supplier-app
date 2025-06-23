@@ -123,9 +123,9 @@ export default function SupplierCriteriaValueForm({
         e.preventDefault();
         onSubmit(form);
         setForm({
-          material_supply_type_id: "",
-          suppliers: [{ supplier_id: "", values: [] }],
-      });
+            material_supply_type_id: "",
+            suppliers: [{ supplier_id: "", values: [] }],
+        });
         setShowForm(false);
     };
 
@@ -144,7 +144,9 @@ export default function SupplierCriteriaValueForm({
             cancelButtonColor: "#6b7280",
             cancelButtonText: "Batal",
             confirmButtonColor: "#ef4444",
-            confirmButtonText: `${type === "cancel" ? "Ya, saya yakin" : "Ya, hapus!"}`,
+            confirmButtonText: `${
+                type === "cancel" ? "Ya, saya yakin" : "Ya, hapus!"
+            }`,
         }).then((result) => {
             if (result.isConfirmed) {
                 {
@@ -206,7 +208,7 @@ export default function SupplierCriteriaValueForm({
                 {/* TABEL HEADER */}
                 {form.material_supply_type_id && (
                     <div className="mt-6 border-t pt-4 space-y-4">
-                        <div className="flex gap-4 font-semibold text-sm text-gray-700">
+                        {/* <div className="flex gap-4 font-semibold text-sm text-gray-700">
                             <div className="w-48">Supplier</div>
                             {criteria.map((c) => (
                                 <div
@@ -217,17 +219,20 @@ export default function SupplierCriteriaValueForm({
                                 </div>
                             ))}
                             <div className="w-10"></div>
-                        </div>
+                        </div> */}
 
                         {/* FORM SUPPLIER */}
                         {form.suppliers.map((supplier, sIndex) => (
                             <div
                                 key={sIndex}
-                                className="flex gap-4 items-start"
+                                // className="flex gap-4 items-start"
+                                className="flex gap-4 border p-4 bg-slate-50 shadow"
                             >
                                 {/* SUPPLIER DROPDOWN */}
                                 <div className="w-48">
                                     <InputForm
+                                        id={`Supplier - ${sIndex + 1}`}
+                                        htmlFor={`Supplier - ${sIndex + 1}`}
                                         as="select"
                                         value={supplier.supplier_id}
                                         onChange={(e) =>
@@ -255,6 +260,8 @@ export default function SupplierCriteriaValueForm({
                                         className="flex-1 min-w-[140px]"
                                     >
                                         <InputForm
+                                            id={`${c.name}`}
+                                            htmlFor={`${c.name}`}
                                             as="select"
                                             value={
                                                 supplier.values?.find(
@@ -288,24 +295,22 @@ export default function SupplierCriteriaValueForm({
                                 ))}
 
                                 {/* DELETE BUTTON */}
-                                <div className="w-10 pt-2">
-                                    {form.suppliers.length > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleDeleteForm(
-                                                    "singleForm",
-                                                    "Form ini akan dihapus!",
-                                                    sIndex
-                                                )
-                                            }
-                                            className="text-red-500 hover:text-red-700"
-                                            title="Hapus"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    )}
-                                </div>
+                                {form.suppliers.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleDeleteForm(
+                                                "singleForm",
+                                                "Form ini akan dihapus!",
+                                                sIndex
+                                            )
+                                        }
+                                        className="text-red-500 mt-2 border border-red-500 hover:bg-red-600/10 rounded w-12 h-12 cursor-pointer flex items-center justify-center"
+                                        title="Hapus"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -317,8 +322,8 @@ export default function SupplierCriteriaValueForm({
                 >
                     <div
                         className={`flex gap-2 ${
-                            (mode === "edit" ||
-                            form.suppliers.length < 1) && "hidden"
+                            (mode === "edit" || form.suppliers.length < 1) &&
+                            "hidden"
                         }`}
                     >
                         <button

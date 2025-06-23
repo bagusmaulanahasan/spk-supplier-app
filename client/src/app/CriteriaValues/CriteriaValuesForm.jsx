@@ -125,8 +125,8 @@ export default function CriteriaValuesForm({
                         >
                             <div className="w-[40%]">
                                 <InputForm
-                                    id={`Nilai Kriteria - ${index + 1}`}
-                                    htmlFor={`Nilai Kriteria - ${index + 1}`}
+                                    id={`Kriteria - ${index + 1}`}
+                                    htmlFor={`Kriteria - ${index + 1}`}
                                     name="criteria_id"
                                     as="select"
                                     value={form.criteria_id}

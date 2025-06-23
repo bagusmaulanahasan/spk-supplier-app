@@ -362,7 +362,7 @@ const BarChartResponsive = () => {
     return (
         <div className="p-6 space-y-6 flex flex-col bg-white rounded shadow-md max-w-8xl mx-auto my-20">
             <h2 className="text-2xl font-semibold text-gray-700">
-                Ranking Supplier Per Material (Berdasarkan API Results)
+                Ranking Supplier Per Material
             </h2>
             {Object.keys(resultsByMaterial).length === 0 && (
                 <p>Tidak ada data hasil.</p>

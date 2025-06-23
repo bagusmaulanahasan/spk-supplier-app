@@ -130,12 +130,12 @@ export default function CriteriaList() {
                     placeholder="Search..."
                     className="border border-gray-300 rounded px-3 py-1 w-1/3"
                 />
-                <button
+                {/* <button
                     onClick={handleExport}
                     className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
                 >
                     Download Excel
-                </button>
+                </button> */}
             </div>
 
             <table className="w-full table-auto border border-gray-300 text-sm">

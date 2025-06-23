@@ -98,7 +98,8 @@ const Dashboard = () => {
                     Dashboard
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Link to="/alternatif">
+                    {/* <Link to="/alternatif"> */}
+                    <div>
                         <Card className="bg-blue-100 shadow-md h-full">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
@@ -116,9 +117,10 @@ const Dashboard = () => {
                                 <Users2 className="text-blue-500 w-8 h-8" />
                             </CardContent>
                         </Card>
-                    </Link>
+                    </div>
 
-                    <Link to="/kriteria">
+                    {/* <Link to="/kriteria"> */}
+                    <div>
                         <Card className="bg-green-100 shadow-md h-full">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
@@ -132,9 +134,10 @@ const Dashboard = () => {
                                 <FileText className="text-green-500 w-8 h-8" />
                             </CardContent>
                         </Card>
-                    </Link>
+                    </div>
 
-                    <Link to="/material-supply">
+                    {/* <Link to="/material-supply"> */}
+                    <div>
                         <Card className="bg-yellow-100 shadow-md h-full">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
@@ -148,9 +151,10 @@ const Dashboard = () => {
                                 <Package className="text-yellow-500 w-8 h-8" />
                             </CardContent>
                         </Card>
-                    </Link>
+                    </div>
 
-                    <Link to="/hasil-perhitungan">
+                    {/* <Link to="/hasil-perhitungan"> */}
+                    <div>
                         <Card className="bg-purple-100 shadow-md h-full">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div>
@@ -166,7 +170,7 @@ const Dashboard = () => {
                                 <Trophy className="text-purple-500 w-8 h-8" />
                             </CardContent>
                         </Card>
-                    </Link>
+                    </div>
                 </div>
                 <BarChart></BarChart>
             </div>
